@@ -8,14 +8,21 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface StaffRepository extends JpaRepository<Staff, Long> {
 
-    @Procedure(name = "getPaginatedNhanVien")
-    List<Staff> getPaginatedNhanVien(@Param("searchTerm") String searchTerm, @Param("pageNum") Integer pageNum,
+    @Procedure(name = "getPaginatedStaff")
+    List<Staff> getPaginatedStaff(@Param("searchTerm") String searchTerm, @Param("pageNum") Integer pageNum,
             @Param("pageSize") Integer pageSize);
 
     @Query(value = "SELECT getTotalPages(:searchTerm, :pageSize)", nativeQuery = true)
     int getTotalPages(@Param("searchTerm") String searchTerm, @Param("pageSize") int pageSize);
+
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    Optional<Staff> findById(long id);
+
+    void deleteById(long id);
 }

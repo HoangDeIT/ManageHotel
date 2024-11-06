@@ -39,50 +39,51 @@
                     </div>
                     <ul class="sidebar-nav">
                         <li class="sidebar-item">
-                            <a href="{{ appUrl }}\admin\dashboard" class="sidebar-link">
-                                <i class="bi bi-speedometer"></i>
+                            <a href="${serverUrl}\staff" class="sidebar-link">
+                                <i class="bi bi-person-workspace"></i>
                                 <span>
-                                    Dashboard
+                                    Staff
                                 </span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ appUrl }}\admin\user" class="sidebar-link">
-                                <i class="bi bi-person"></i>
+                            <a href="${serverUrl}\customer" class="sidebar-link">
+                                <i class="bi bi-person-arms-up"></i>
                                 <span>
-                                    Manage User
+                                    Customer
                                 </span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ appUrl }}\admin\product" class="sidebar-link">
-                                <i class="bi bi-box-seam-fill"></i>
+                            <a href="${serverUrl}/room" class="sidebar-link">
+                                <i class="bi bi-house"></i>
                                 <span>
-                                    Manage product
+                                    Room
                                 </span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ appUrl }}\admin\order" class="sidebar-link">
-                                <i class="bi bi-bag-check-fill position-relative">
-                                    <span style="font-size: 10px;"
-                                        class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                                        {{pendingOrders}}
-                                        <span class="visually-hidden">
-                                            unread messages
-                                        </span>
-                                    </span>
-                                </i>
+                            <a href="${serverUrl}/room" class="sidebar-link">
+                                <i class="bi bi-handbag-fill"></i>
                                 <span>
-                                    Manage Orders
+                                    Rent a room
+                                </span>
+                            </a>
+                        </li>
+
+                        <li class="sidebar-item">
+                            <a href="${serverUrl}/service" class="sidebar-link">
+                                <i class="bi bi-archive-fill"></i>
+                                <span>
+                                    Service
                                 </span>
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="{{ appUrl }}\admin\brand" class="sidebar-link">
-                                <i class="bi bi-watch"></i>
+                            <a href="${serverUrl}/pay" class="sidebar-link">
+                                <i class="bi bi-credit-card-2-back-fill"></i>
                                 <span>
-                                    Manage Brand
+                                    Pay
                                 </span>
                             </a>
                         </li>
@@ -92,8 +93,7 @@
                         <p>
                             Hello admin
                         </p>
-                        <img id="dropdownMenuButton1" data-bs-toggle="dropdown" src="/uploads/avatars/avatar.png"
-                            alt="Avatar" class="avatar">
+                        <img id="dropdownMenuButton1" data-bs-toggle="dropdown" src="" alt="Avatar" class="avatar">
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li>
                                 <a class="dropdown-item" href="#">

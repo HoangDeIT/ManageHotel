@@ -31,216 +31,220 @@
                     </div>
 
 
-                    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-                        <table class="table table-hover my-4">
-                            <thead>
+
+                    <table class="table table-hover my-4">
+                        <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Mã nhân viên</th>
+                                <th scope="col">Họ tên</th>
+                                <th scope="col">Ngày sinh</th>
+                                <th scope="col">Số điện thoại</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="staff" items="${staffList}" varStatus="loop">
                                 <tr>
-                                    <th scope="col">#</th>
-                                    <th scope="col">Mã nhân viên</th>
-                                    <th scope="col">Họ tên</th>
-                                    <th scope="col">Ngày sinh</th>
-                                    <th scope="col">Số điện thoại</th>
-                                    <th scope="col">Action</th>
+                                    <th scope="row">${loop.index + 1}</th>
+                                    <td>${staff.id}</td>
+                                    <td>${staff.fullName}</td>
+                                    <td>${staff.birthDate}</td>
+                                    <td>${staff.phoneNumber}</td>
+                                    <td>
+                                        <a class="btn btn-warning mx-2" href="staff/update/${staff.id}">Update</a>
+                                        <button class="btn btn-danger delete-staff" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModal" data-username="${staff.fullName}"
+                                            data-id="${staff.id}">Delete</button>
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="nhanVien" items="${nhanViens}" varStatus="loop">
-                                    <tr>
-                                        <th scope="row">${loop.index + 1}</th>
-                                        <td>${nhanVien.maNhanVien}</td>
-                                        <td>${nhanVien.hoTen}</td>
-                                        <td>${nhanVien.ngaySinh}</td>
-                                        <td>${nhanVien.soDienThoai}</td>
-                                        <td>
-                                            <a class="btn btn-secondary"
-                                                href="/admin/nhanvien/detail?id=${nhanVien.maNhanVien}">Detail</a>
-                                            <a class="btn btn-warning mx-2"
-                                                href="/admin/nhanvien/update?id=${nhanVien.maNhanVien}">Update</a>
-                                            <button class="btn btn-danger delete-nhanVien" data-bs-toggle="modal"
-                                                data-bs-target="#exampleModal" data-username="${nhanVien.hoTen}"
-                                                data-id="${nhanVien.maNhanVien}">Delete</button>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
+                            </c:forEach>
 
-                        <nav aria-label="Page navigation">
-                            <div class="d-flex justify-content-center gap-4">
-                                <div>
+                        </tbody>
+                    </table>
 
-                                    <ul class="pagination d-flex justify-content-center">
-                                        <c:choose>
-                                            <c:when test="${currentPage > 1}">
-                                                <c:url var="prevUrl" value="/staff/show">
-                                                    <c:param name="pageNum" value="${currentPage - 1}" />
+                    <nav aria-label="Page navigation">
+                        <div class="d-flex justify-content-center gap-4">
+                            <div>
 
-                                                </c:url>
-                                                <li class="page-item">
-                                                    <a role="button" href="${prevUrl}" class="page-link">
-                                                        <span>&laquo;</span>
-                                                    </a>
-                                                </li>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <li class="page-item disabled">
-                                                    <a role="button" href="#" class="page-link">
-                                                        <span>&laquo;</span>
-                                                    </a>
-                                                </li>
-                                            </c:otherwise>
-                                        </c:choose>
-
-                                        <c:forEach var="page" items="${pageArray}">
-                                            <c:url var="pageUrl" value="/staff">
-                                                <c:param name="pageNum" value="${page}" />
-
+                                <ul class="pagination d-flex justify-content-center">
+                                    <c:choose>
+                                        <c:when test="${currentPage > 1}">
+                                            <c:url var="prevUrl" value="/staff">
+                                                <c:param name="pageNum" value="${currentPage - 1}" />
+                                                <c:param name="searchTerm" value="${searchTerm}" />
                                             </c:url>
-                                            <li class="page-item${currentPage == page ? ' active' : ''}">
-                                                <a role="button" href="${pageUrl}" class="page-link">${page}</a>
+                                            <li class="page-item">
+                                                <a role="button" href="${prevUrl}" class="page-link">
+                                                    <span>&laquo;</span>
+                                                </a>
                                             </li>
-                                        </c:forEach>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="page-item disabled">
+                                                <a role="button" href="#" class="page-link">
+                                                    <span>&laquo;</span>
+                                                </a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
 
-                                        <c:choose>
-                                            <c:when test="${currentPage < totalPages}">
-                                                <c:url var="nextUrl" value="/staff/show">
-                                                    <c:param name="pageNum" value="${currentPage + 1}" />
-                                                </c:url>
-                                                <li class="page-item">
-                                                    <a role="button" href="${nextUrl}" class="page-link">
-                                                        <span>&raquo;</span>
-                                                    </a>
-                                                </li>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <li class="page-item disabled">
-                                                    <a role="button" href="#" class="page-link">
-                                                        <span>&raquo;</span>
-                                                    </a>
-                                                </li>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </ul>
+                                    <c:forEach var="page" items="${pageArray}">
+                                        <c:url var="pageUrl" value="/staff">
+                                            <c:param name="pageNum" value="${page}" />
+                                            <c:param name="searchTerm" value="${searchTerm}" />
+                                        </c:url>
+                                        <li class="page-item${currentPage == page ? ' active' : ''}">
+                                            <a role="button" href="${pageUrl}" class="page-link">${page}</a>
+                                        </li>
+                                    </c:forEach>
+
+                                    <c:choose>
+                                        <c:when test="${currentPage < totalPages}">
+                                            <c:url var="nextUrl" value="/staff">
+                                                <c:param name="pageNum" value="${currentPage + 1}" />
+                                                <c:param name="searchTerm" value="${searchTerm}" />
+                                            </c:url>
+                                            <li class="page-item">
+                                                <a role="button" href="${nextUrl}" class="page-link">
+                                                    <span>&raquo;</span>
+                                                </a>
+                                            </li>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <li class="page-item disabled">
+                                                <a role="button" href="#" class="page-link">
+                                                    <span>&raquo;</span>
+                                                </a>
+                                            </li>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </ul>
 
 
+                            </div>
+                            <div class="col-2">
+                                <div class="input-group">
+                                    <input type="number" class="form-control page-input" placeholder="Nhập số trang">
+                                    <button class="btn btn-outline-secondary page" type="button">
+                                        <i class="bi bi-list-ol"></i>
+                                    </button>
                                 </div>
-                                <div class="col-2">
-                                    <div class="input-group">
-                                        <input type="number" class="form-control page-input"
-                                            placeholder="Nhập số trang">
-                                        <button class="btn btn-outline-secondary page" type="button">
-                                            <i class="bi bi-list-ol"></i>
-                                        </button>
+                            </div>
+                        </div>
+
+                    </nav>
+                    <!-- Modal -->
+                    <div>
+                        <div>
+                            <div class="modal modal-xl fade" id="staticBackdrop" data-bs-backdrop="static"
+                                data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form:form action="/staff" method="post" modelAttribute="newStaff">
+                                            <div class="modal-header">
+                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Add new user</h1>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
+                                            <c:set var="errorName">
+                                                <form:errors path="fullName" cssClass="invalid-feedback" />
+                                            </c:set>
+                                            <c:set var="errorPass">
+                                                <form:errors path="password" cssClass="invalid-feedback" />
+                                            </c:set>
+                                            <c:set var="errorPhone">
+                                                <form:errors path="phoneNumber" cssClass="invalid-feedback" />
+                                            </c:set>
+
+                                            <div class="modal-body">
+                                                <div class="modal-body">
+                                                    <div class="form-floating mb-3 col-12">
+                                                        <form:input type="text" path="fullName"
+                                                            class="form-control ${not empty errorName ? 'is-invalid' : ''}"
+                                                            placeholder="Full Name" />
+                                                        <label for="fullName">Full Name</label>
+                                                        ${errorName}
+                                                    </div>
+                                                    <div class="form-floating mb-3 col-12">
+                                                        <form:input type="password" path="password"
+                                                            class="form-control ${not empty errorPass ? 'is-invalid' : ''}"
+                                                            placeholder="Password" />
+                                                        <label for="password">Password</label>
+                                                        ${errorPass}
+                                                    </div>
+                                                    <div class="form-floating mb-3 col-12">
+                                                        <form:input type="date" path="birthDate" class="form-control"
+                                                            placeholder="Birth Date" />
+                                                        <label for="birthDate">Birth Date</label>
+                                                    </div>
+                                                    <div class="form-floating mb-3 col-12">
+                                                        <form:input type="text" path="phoneNumber"
+                                                            class="form-control ${not empty errorPhone ? 'is-invalid' : ''}"
+                                                            id="phoneNumber" placeholder="Phone Number" />
+                                                        <label for="phoneNumber">Phone Number</label>
+                                                        ${errorPhone}
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">Close</button>
+                                                    <button type="submit" class="btn btn-primary">Add</button>
+                                                </div>
+                                        </form:form>
+
+
                                     </div>
                                 </div>
                             </div>
-                        </nav>
-                        <!-- Modal -->
-                        <div class="modal modal-xl fade" id="staticBackdrop" data-bs-backdrop="static"
-                            data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <form:form action="/staff" method="post" modelAttribute="newStaff">
-                                        <div class="modal-header">
-                                            <h1 class="modal-title fs-5" id="staticBackdropLabel">Add new user</h1>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
 
-
-                                        <div class="modal-body">
+                        </div>
+                        <div>
+                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form id="deleteForm" action="/staff/delete" method="post">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Modal delete</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                            </div>
                                             <div class="modal-body">
-                                                <div class="form-floating mb-3 col-12">
-                                                    <form:input type="text" path="hoTen"
-                                                        class="form-control ${not empty newStaff.hoTen ? 'is-invalid' : ''}"
-                                                        id="hoTen" placeholder="Họ tên" />
-                                                    <label for="hoTen">Họ
-                                                        tên</label>
-                                                    <div class="invalid-feedback">
-                                                        <form:errors path="hoTen" />
-                                                    </div>
-                                                </div>
-                                                <div class="form-floating mb-3 col-12">
-                                                    <form:input type="password" path="password"
-                                                        class="form-control ${not empty newStaff.password ? 'is-invalid' : ''}"
-                                                        id="password" placeholder="Password" /> <label
-                                                        for="password">Password</label>
-                                                    <div class="invalid-feedback">
-                                                        <form:errors path="password" />
-                                                    </div>
-                                                </div>
-                                                <div class="form-floating mb-3 col-12">
-                                                    <form:input type="date" path="ngaySinh"
-                                                        class="form-control ${not empty newStaff.ngaySinh ? 'is-invalid' : ''}"
-                                                        id="ngaySinh" placeholder="Ngày sinh" /> <label
-                                                        for="ngaySinh">Ngày sinh</label>
-                                                    <div class="invalid-feedback">
-                                                        <form:errors path="ngaySinh" />
-                                                    </div>
-                                                </div>
-                                                <div class="form-floating mb-3 col-12">
-                                                    <form:input type="text" path="soDienThoai"
-                                                        class="form-control ${not empty newStaff.soDienThoai ? 'is-invalid' : ''}"
-                                                        id="soDienThoai" placeholder="Số điện thoại" />
-                                                    <label for="soDienThoai">Số điện thoại</label>
-                                                    <div class="invalid-feedback">
-                                                        <form:errors path="soDienThoai" />
-                                                    </div>
-                                                </div>
+                                                <p>Delete user name: <span id="modal-username"></span></p>
+                                                <input type="hidden" name="id" id="modal-user-id">
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">Close</button>
-                                                <button type="submit" class="btn btn-primary">Add</button>
-
-
+                                                <button type="submit" class="btn btn-danger">Delete</button>
                                             </div>
-
-                                    </form:form>
-
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModal"
-                            aria-hidden="true">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <form id="deleteForm" action="/admin/user/delete" method="post">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title">Modal delete</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <p>Delete user name: <span id="modal-username"></span></p>
-                                            <input type="hidden" name="user_id" id="modal-user-id">
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-bs-dismiss="modal">Close</button>
-                                            <button type="submit" class="btn btn-danger">Delete</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
+                    </div>
                 </div>
                 <script>
                     const modalElement = document.getElementById('exampleModal');
                     const modal = new bootstrap.Modal(modalElement);
-                    const btn_deleteUser = document.querySelectorAll(".delete-user");
-                    btn_deleteUser.forEach(button => {
-                        button.addEventListener('click', () => {
+                    // JavaScript mở modal khi người dùng nhấn nút xóa
+                    const deleteButtons = document.querySelectorAll('.delete-staff');
+                    deleteButtons.forEach(button => {
+                        button.addEventListener('click', function () {
+                            // Lấy dữ liệu từ thuộc tính data-* của nút
                             const username = button.getAttribute('data-username');
                             const userId = button.getAttribute('data-id');
 
+                            // Cập nhật tên người dùng vào modal
                             document.getElementById('modal-username').textContent = username;
                             document.getElementById('modal-user-id').value = userId;
+
                         });
                     });
+
                     // /
 
                     const getSearchValue = () => {
@@ -300,7 +304,7 @@
                 </script>
 
 
-                <c:if test="${not empty errors}">
+                <c:if test="${not empty errors.hasErrors()}">
                     <script>
 
                         const modal1 = new bootstrap.Modal(document.getElementById('staticBackdrop'));
