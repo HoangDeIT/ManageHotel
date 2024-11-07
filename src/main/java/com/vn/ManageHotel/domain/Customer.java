@@ -52,4 +52,8 @@ public class Customer {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public String getIdName() {
+        return id + " - " + name;
+    }
 }

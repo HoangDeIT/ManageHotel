@@ -63,10 +63,10 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="${serverUrl}/room" class="sidebar-link">
+                            <a href="${serverUrl}/rental" class="sidebar-link">
                                 <i class="bi bi-handbag-fill"></i>
                                 <span>
-                                    Rent a room
+                                    Rental
                                 </span>
                             </a>
                         </li>

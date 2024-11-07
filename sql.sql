@@ -193,3 +193,74 @@ BEGIN
 END //
 
 DELIMITER ;
+---Logic lay du lieu cho rentals
+
+DELIMITER //
+
+CREATE PROCEDURE getPaginatedRentals(
+    IN searchTerm VARCHAR(255),
+    IN pageNum INT,
+    IN pageSize INT,
+    IN startDate DATE,
+    IN endDate DATE
+)
+BEGIN
+    DECLARE offset INT;
+
+    SET offset = (pageNum - 1) * pageSize;
+
+    IF searchTerm IS NULL OR searchTerm = '' THEN
+        SELECT r.* 
+        FROM rental r
+        WHERE r.start_date BETWEEN startDate AND endDate
+        LIMIT pageSize OFFSET offset;
+    ELSE
+        SELECT r.* 
+        FROM rental r
+        WHERE r.start_date BETWEEN startDate AND endDate
+        AND (r.customer_id IN (SELECT id FROM customer WHERE name LIKE CONCAT('%', searchTerm, '%')) 
+             OR r.room_id IN (SELECT id FROM room WHERE room_name LIKE CONCAT('%', searchTerm, '%')))
+        LIMIT pageSize OFFSET offset;
+    END IF;
+END //
+
+DELIMITER ;
+
+
+
+---
+DELIMITER //
+
+CREATE FUNCTION getTotalPagesForRentals(
+    searchTerm VARCHAR(255),
+    pageSize INT,
+    startDate DATE,
+    endDate DATE
+) RETURNS INT
+READS SQL DATA
+BEGIN
+    DECLARE totalRecords INT;
+    DECLARE totalPages INT;
+
+    IF searchTerm IS NULL OR searchTerm = '' THEN
+        SELECT COUNT(*) INTO totalRecords 
+        FROM rental r
+        JOIN customer c ON r.customer_id = c.id
+        JOIN room ro ON r.room_id = ro.id
+        WHERE r.start_date BETWEEN startDate AND endDate;
+    ELSE
+        SELECT COUNT(*) INTO totalRecords 
+        FROM rental r
+        JOIN customer c ON r.customer_id = c.id
+        JOIN room ro ON r.room_id = ro.id
+        WHERE r.start_date BETWEEN startDate AND endDate
+        AND (c.name LIKE CONCAT('%', searchTerm, '%') 
+             OR ro.room_name LIKE CONCAT('%', searchTerm, '%'));
+    END IF;
+
+    SET totalPages = CEIL(totalRecords / pageSize);
+
+    RETURN totalPages;
+END //
+
+DELIMITER ;

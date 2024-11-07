@@ -72,4 +72,8 @@ public class Room {
     public void setRentalPrice(Double rentalPrice) {
         this.rentalPrice = rentalPrice;
     }
+
+    public String getIdRoomName() {
+        return id + " - " + roomName;
+    }
 }

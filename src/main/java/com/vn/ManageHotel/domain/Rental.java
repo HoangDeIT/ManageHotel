@@ -2,6 +2,8 @@ package com.vn.ManageHotel.domain;
 
 import java.time.LocalDate;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,13 +27,15 @@ public class Rental {
     @NotNull(message = "Phòng không được để trống")
     private Room room;
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
     @Column(nullable = false)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @NotNull(message = "Ngày ra không được để trống")
     private LocalDate endDate;
     @Column(nullable = false)
     @NotNull(message = "Đặt cọc không được để trống")
-    private Double deposit;
+    private double deposit;
 
     public Long getId() {
         return id;
@@ -80,4 +84,5 @@ public class Rental {
     public void setDeposit(double deposit) {
         this.deposit = deposit;
     }
+
 }
