@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.vn.ManageHotel.domain.Staff;
 import com.vn.ManageHotel.service.StaffService;
+import com.vn.ManageHotel.utils.PaginationUtils;
 
 import jakarta.validation.Valid;
 
@@ -27,8 +29,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class StaffController {
     @Value("${server.url}")
     private String serverUrl;
-    @Autowired
-    private StaffService staffService;
+
+    private final StaffService staffService;
+    private final PasswordEncoder passwordEncoder;
+
+    public StaffController(StaffService staffService, PasswordEncoder passwordEncoder) {
+        this.staffService = staffService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @GetMapping("")
     public String getMethodName(Model model,
@@ -42,7 +50,7 @@ public class StaffController {
         List<Staff> staffList = staffService.getPaginatedStaff(searchTerm, pageNum, pageSize);
         int totalPages = staffService.getTotalPages(searchTerm, pageSize);
 
-        List<Integer> pageArray = StaffService.getPagination(totalPages, pageNum, 5);
+        List<Integer> pageArray = PaginationUtils.getPagination(totalPages, pageNum, 5);
         model.addAttribute("staffList", staffList);
         model.addAttribute("pageArray", pageArray);
         model.addAttribute("currentPage", pageNum);
@@ -68,9 +76,9 @@ public class StaffController {
             model.addAttribute("totalPages", totalPages);
             model.addAttribute("newStaff", staff); // Thêm lại đối tượng staff để giữ thông tin người dùng đã nhập
             model.addAttribute("errors", bindingResult);
-
             return "staff/show";
         }
+        staff.setPassword(passwordEncoder.encode(staff.getPassword()));
         staffService.saveStaff(staff);
         // System.out.println(staff);
         return "redirect:/staff";

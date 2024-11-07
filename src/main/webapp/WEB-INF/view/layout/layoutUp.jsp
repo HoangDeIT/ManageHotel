@@ -96,9 +96,12 @@
                         <img id="dropdownMenuButton1" data-bs-toggle="dropdown" src="" alt="Avatar" class="avatar">
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li>
-                                <a class="dropdown-item" href="#">
-                                    Logout
-                                </a>
+                                <form action="/logout" method="post">
+                                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" />
+                                    <button class="dropdown-item">
+                                        Logout
+                                    </button>
+                                </form>
                             </li>
                         </ul>
                     </div>

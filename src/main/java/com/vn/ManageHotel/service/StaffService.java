@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,28 +31,7 @@ public class StaffService {
 
     @Transactional
     public int getTotalPages(String searchTerm, int pageSize) {
-        return staffRepository.getTotalPages(searchTerm, pageSize);
-    }
-
-    public static List<Integer> getPagination(int totalPages, int currentPage, int maxPagesToShow) {
-        List<Integer> pages = new ArrayList<>();
-        int startPage = Math.max(1, currentPage - maxPagesToShow / 2);
-        int endPage = Math.min(totalPages, currentPage + maxPagesToShow / 2);
-
-        // Adjust if near the beginning or end
-        if (endPage - startPage + 1 < maxPagesToShow) {
-            if (startPage == 1) {
-                endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-            } else {
-                startPage = Math.max(1, endPage - maxPagesToShow + 1);
-            }
-        }
-
-        for (int i = startPage; i <= endPage; i++) {
-            pages.add(i);
-        }
-
-        return pages;
+        return staffRepository.getTotalPagesForStaff(searchTerm, pageSize);
     }
 
     public Staff saveStaff(Staff staff) {
@@ -71,8 +50,11 @@ public class StaffService {
         return staffRepository.findById(id).orElse(null);
     }
 
-    @Transactional
     public void deleteStaff(long id) {
         staffRepository.deleteById(id);
+    }
+
+    public Optional<Staff> getStaffByPhoneNumber(String phoneNumber) {
+        return staffRepository.findByPhoneNumber(phoneNumber);
     }
 }

@@ -17,12 +17,14 @@ public interface StaffRepository extends JpaRepository<Staff, Long> {
     List<Staff> getPaginatedStaff(@Param("searchTerm") String searchTerm, @Param("pageNum") Integer pageNum,
             @Param("pageSize") Integer pageSize);
 
-    @Query(value = "SELECT getTotalPages(:searchTerm, :pageSize)", nativeQuery = true)
-    int getTotalPages(@Param("searchTerm") String searchTerm, @Param("pageSize") int pageSize);
+    @Query(value = "SELECT getTotalPagesForStaff(:searchTerm, :pageSize)", nativeQuery = true)
+    int getTotalPagesForStaff(@Param("searchTerm") String searchTerm, @Param("pageSize") int pageSize);
 
     boolean existsByPhoneNumber(String phoneNumber);
 
     Optional<Staff> findById(long id);
 
     void deleteById(long id);
+
+    Optional<Staff> findByPhoneNumber(String phoneNumber);
 }
