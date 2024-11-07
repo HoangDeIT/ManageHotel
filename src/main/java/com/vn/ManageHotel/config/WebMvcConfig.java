@@ -13,12 +13,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
 
-import jakarta.validation.Validator;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
-
 @Configuration
 @EnableWebMvc
 public class WebMvcConfig implements WebMvcConfigurer {

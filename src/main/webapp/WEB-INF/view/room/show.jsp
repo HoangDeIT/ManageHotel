@@ -7,17 +7,33 @@
 
                 <div class="mt-5 container">
                     <div class="d-flex justify-content-between">
-                        <h1>Manage Customers</h1>
+                        <h1>Manage Rooms</h1>
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop">
-                            Add new customers
+                            Add new rooms
                         </button>
                     </div>
                     <hr />
                     <div class="row">
                         <div class="col-8 offset-2">
                             <div class="input-group">
+                                <div class="input-group-btn search-panel">
+                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span id="search_concept">Filter by</span> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a class="dropdown-item filter" data-filter="STANDARD">Standard</a></li>
+                                        <li><a class="dropdown-item filter" data-filter="DELUXE">Deluxe</a></li>
+                                        <li><a class="dropdown-item filter" data-filter="VIP">VIP</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item filter" data-filter="anything">Anything</a></li>
+                                    </ul>
+
+                                </div>
                                 <input type="text" id="search-bar" class="form-control" placeholder="Search term...">
                                 <button class="btn btn-outline-secondary" type="button" id="search-button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -44,21 +60,23 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="customer" items="${customerList}" varStatus="loop">
+                            <c:forEach var="room" items="${roomList}" varStatus="loop">
                                 <tr>
                                     <th scope="row">${loop.index + 1}</th>
-                                    <td>${customer.id}</td>
-                                    <td>${customer.name}</td>
-                                    <td>${customer.address}</td>
-                                    <td>${customer.phoneNumber}</td>
+                                    <td>${room.id}</td>
+                                    <td>${room.roomName}</td>
+                                    <td>${room.roomType}</td>
+                                    <td>${room.area}</td>
+                                    <td>${room.rentalPrice}</td>
                                     <td>
-                                        <a class="btn btn-warning mx-2" href="customer/update/${customer.id}">Update</a>
-                                        <button class="btn btn-danger delete-customer" data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal" data-username="${customer.name}"
-                                            data-id="${customer.id}">Delete</button>
+                                        <a class="btn btn-warning mx-2" href="room/update/${room.id}">Update</a>
+                                        <button class="btn btn-danger delete-room" data-bs-toggle="modal"
+                                            data-bs-target="#exampleModal" data-roomname="${room.roomName}"
+                                            data-id="${room.id}">Delete</button>
                                     </td>
                                 </tr>
                             </c:forEach>
+
                         </tbody>
 
                     </table>
@@ -70,9 +88,10 @@
                                 <ul class="pagination d-flex justify-content-center">
                                     <c:choose>
                                         <c:when test="${currentPage > 1}">
-                                            <c:url var="prevUrl" value="/customer">
+                                            <c:url var="prevUrl" value="/room">
                                                 <c:param name="pageNum" value="${currentPage - 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
+                                                <c:param name="roomType" value="${roomType}" />
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${prevUrl}" class="page-link">
@@ -90,9 +109,10 @@
                                     </c:choose>
 
                                     <c:forEach var="page" items="${pageArray}">
-                                        <c:url var="pageUrl" value="/customer">
+                                        <c:url var="pageUrl" value="/room">
                                             <c:param name="pageNum" value="${page}" />
                                             <c:param name="searchTerm" value="${searchTerm}" />
+                                            <c:param name="roomType" value="${roomType}" />
                                         </c:url>
                                         <li class="page-item${currentPage == page ? ' active' : ''}">
                                             <a role="button" href="${pageUrl}" class="page-link">${page}</a>
@@ -101,9 +121,10 @@
 
                                     <c:choose>
                                         <c:when test="${currentPage < totalPages}">
-                                            <c:url var="nextUrl" value="/customer">
+                                            <c:url var="nextUrl" value="/room">
                                                 <c:param name="pageNum" value="${currentPage + 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
+                                                <c:param name="roomType" value="${roomType}" />
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${nextUrl}" class="page-link">
@@ -119,6 +140,7 @@
                                             </li>
                                         </c:otherwise>
                                     </c:choose>
+
                                 </ul>
 
 
@@ -142,45 +164,57 @@
                                 aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form:form action="/customer" method="post" modelAttribute="newCustomer">
+                                        <form:form action="/room" method="post" modelAttribute="newRoom">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Add new customer
-                                                </h1>
+                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Add new room</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
                                             <c:set var="errorName">
-                                                <form:errors path="name" cssClass="invalid-feedback" />
+                                                <form:errors path="roomName" cssClass="invalid-feedback" />
                                             </c:set>
-                                            <c:set var="errorAddress">
-                                                <form:errors path="address" cssClass="invalid-feedback" />
+                                            <c:set var="errorArea">
+                                                <form:errors path="area" cssClass="invalid-feedback" />
                                             </c:set>
-                                            <c:set var="errorPhone">
-                                                <form:errors path="phoneNumber" cssClass="invalid-feedback" />
+                                            <c:set var="errorPrice">
+                                                <form:errors path="rentalPrice" cssClass="invalid-feedback" />
+                                            </c:set>
+                                            <c:set var="errorRoomType">
+                                                <form:errors path="roomType" cssClass="invalid-feedback" />
                                             </c:set>
 
                                             <div class="modal-body">
                                                 <div class="modal-body">
                                                     <div class="form-floating mb-3 col-12">
-                                                        <form:input type="text" path="name"
+                                                        <form:input type="text" path="roomName"
                                                             class="form-control ${not empty errorName ? 'is-invalid' : ''}"
-                                                            placeholder="Name" />
-                                                        <label for="name">Name</label>
+                                                            placeholder="Room Name" />
+                                                        <label for="roomName">Room Name</label>
                                                         ${errorName}
                                                     </div>
                                                     <div class="form-floating mb-3 col-12">
-                                                        <form:input type="text" path="address"
-                                                            class="form-control ${not empty errorAddress ? 'is-invalid' : ''}"
-                                                            placeholder="Address" />
-                                                        <label for="address">Address</label>
-                                                        ${errorAddress}
+                                                        <form:input type="text" path="area"
+                                                            class="form-control ${not empty errorArea ? 'is-invalid' : ''}"
+                                                            placeholder="Area" />
+                                                        <label for="area">Area</label>
+                                                        ${errorArea}
                                                     </div>
                                                     <div class="form-floating mb-3 col-12">
-                                                        <form:input type="text" path="phoneNumber"
-                                                            class="form-control ${not empty errorPhone ? 'is-invalid' : ''}"
-                                                            id="phoneNumber" placeholder="Phone Number" />
-                                                        <label for="phoneNumber">Phone Number</label>
-                                                        ${errorPhone}
+                                                        <form:input type="text" path="rentalPrice"
+                                                            class="form-control ${not empty errorPrice ? 'is-invalid' : ''}"
+                                                            id="rentalPrice" placeholder="Rental Price" />
+                                                        <label for="rentalPrice">Rental Price</label>
+                                                        ${errorPrice}
+                                                    </div>
+                                                    <div class="form-floating mb-3 col-12">
+                                                        <form:select path="roomType"
+                                                            class="form-select ${not empty errorRoomType ? 'is-invalid' : ''}"
+                                                            id="roomType">
+                                                            <form:option value="" label="Select Room Type" />
+                                                            <form:options items="${roomTypes}" />
+                                                        </form:select>
+                                                        <label for="roomType">Room Type</label>
+                                                        ${errorRoomType}
                                                     </div>
                                                 </div>
                                                 <div class="modal-footer">
@@ -188,7 +222,9 @@
                                                         data-bs-dismiss="modal">Close</button>
                                                     <button type="submit" class="btn btn-primary">Add</button>
                                                 </div>
+                                            </div>
                                         </form:form>
+
 
 
                                     </div>
@@ -201,15 +237,16 @@
                                 aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form id="deleteForm" action="/customer/delete" method="post">
+                                        <form id="deleteForm" action="/room/delete" method="post">
                                             <div class="modal-header">
                                                 <h5 class="modal-title" id="exampleModalLabel">Modal delete</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
-                                                <p>Delete customer name: <span id="modal-username"></span></p>
-                                                <input type="hidden" name="id" id="modal-user-id">
+                                                <input type="hidden" name="_csrf" value="${_csrf.token}" />
+                                                <p>Delete room name: <span id="modal-roomname"></span></p>
+                                                <input type="hidden" name="id" id="modal-room-id">
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
@@ -217,6 +254,7 @@
                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                             </div>
                                         </form>
+
                                     </div>
                                 </div>
                             </div>
@@ -229,16 +267,16 @@
                         const modalElement = document.getElementById('exampleModal');
                         const modal = new bootstrap.Modal(modalElement);
                         // JavaScript mở modal khi người dùng nhấn nút xóa
-                        const deleteButtons = document.querySelectorAll('.delete-customer');
+                        const deleteButtons = document.querySelectorAll('.delete-room');
                         deleteButtons.forEach(button => {
                             button.addEventListener('click', () => {
                                 // Lấy dữ liệu từ thuộc tính data-* của nút
-                                const username = button.getAttribute('data-username');
+                                const username = button.getAttribute('data-roomname');
                                 const userId = button.getAttribute('data-id');
 
                                 // Cập nhật tên người dùng vào modal
-                                document.getElementById('modal-username').textContent = username;
-                                document.getElementById('modal-user-id').value = userId;
+                                document.getElementById('modal-roomname').textContent = username;
+                                document.getElementById('modal-room-id').value = userId;
 
                             });
                         });
@@ -267,10 +305,10 @@
                                 let fullLink = window.location.href;
                                 const url = new URL(fullLink);
                                 if (item.getAttribute('data-filter') === 'any') {
-                                    url.searchParams.delete('filterBy')
+                                    url.searchParams.delete('roomType')
                                     window.location.href = url
                                 } else {
-                                    url.searchParams.set('filterBy', (item.getAttribute('data-filter')));
+                                    url.searchParams.set('roomType', (item.getAttribute('data-filter')));
                                     window.location.href = url
                                 }
                             })

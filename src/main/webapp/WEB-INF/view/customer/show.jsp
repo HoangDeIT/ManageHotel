@@ -209,6 +209,8 @@
                                             </div>
                                             <div class="modal-body">
                                                 <p>Delete customer name: <span id="modal-username"></span></p>
+                                                <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
                                                 <input type="hidden" name="id" id="modal-user-id">
                                             </div>
                                             <div class="modal-footer">

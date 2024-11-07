@@ -212,6 +212,8 @@
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
+                                                <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
                                                 <p>Delete user name: <span id="modal-username"></span></p>
                                                 <input type="hidden" name="id" id="modal-user-id">
                                             </div>
