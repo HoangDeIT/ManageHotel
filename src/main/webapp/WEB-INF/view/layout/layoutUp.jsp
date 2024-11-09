@@ -62,14 +62,7 @@
                                 </span>
                             </a>
                         </li>
-                        <li class="sidebar-item">
-                            <a href="${serverUrl}/rental" class="sidebar-link">
-                                <i class="bi bi-handbag-fill"></i>
-                                <span>
-                                    Rental
-                                </span>
-                            </a>
-                        </li>
+
 
                         <li class="sidebar-item">
                             <a href="${serverUrl}/service" class="sidebar-link">
@@ -80,10 +73,10 @@
                             </a>
                         </li>
                         <li class="sidebar-item">
-                            <a href="${serverUrl}/pay" class="sidebar-link">
-                                <i class="bi bi-credit-card-2-back-fill"></i>
+                            <a href="${serverUrl}/rental" class="sidebar-link">
+                                <i class="bi bi-handbag-fill"></i>
                                 <span>
-                                    Pay
+                                    Rental
                                 </span>
                             </a>
                         </li>

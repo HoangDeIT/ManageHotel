@@ -72,6 +72,9 @@
                                         <button class="btn btn-danger delete-rental" data-bs-toggle="modal"
                                             data-bs-target="#deleteRentalModal" data-rentalid="${rental.id}"
                                             data-customername="${rental.customer.name}">Delete</button>
+                                        <button class="btn btn-success payment-rental" data-bs-toggle="modal"
+                                            data-bs-target="#paymentRentalModal" data-rentalid="${rental.id}"
+                                            data-customername="${rental.customer.name}">Thanh Toán</button>
                                     </td>
                                 </tr>
                             </c:forEach>
@@ -274,6 +277,47 @@
 
 
                         </div>
+
+
+                        <div class="modal fade" id="paymentRentalModal" tabindex="-1" data-bs-backdrop="static"
+                            aria-labelledby="paymentRentalModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="paymentRentalModalLabel">Thanh Toán</h5> <button
+                                            type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="paymentForm" action="/payments/add" method="post"> <input
+                                                type="hidden" id="modal-rental-id" name="rental.id">
+                                            <div class="mb-3"> <label for="amount" class="form-label">Thành
+                                                    Tiền</label> <input type="number" class="form-control" id="amount"
+                                                    name="amount" required> </div>
+                                            <div class="mb-3"> <label for="paymentMethod" class="form-label">Hình
+                                                    Thức Thanh Toán</label> <input type="text" class="form-control"
+                                                    id="paymentMethod" name="paymentMethod" required> </div>
+                                            <div class="mb-3"> <label for="notes" class="form-label">Ghi Chú</label>
+                                                <textarea class="form-control" id="notes" name="notes"></textarea>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="paymentDate" class="form-label">Ngày Thanh Toán</label>
+                                                <input type="date" class="form-control" id="paymentDate"
+                                                    name="paymentDate" required>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Đóng</button>
+                                        <button type="submit" class="btn btn-success"
+                                            onclick="document.getElementById('paymentForm').submit();">Thanh
+                                            Toán</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
                 <script>
@@ -297,7 +341,16 @@
                                 modal.show();
                             });
                         });
+                        const paymentButtons = document.querySelectorAll('.payment-rental');
+                        paymentButtons.forEach(button => {
+                            const paymentModal = new bootstrap.Modal(document.getElementById('paymentRentalModal'));
+                            button.addEventListener('click', () => { // Lấy dữ liệu từ thuộc tính data-* của nút 
+                                const rentalId = button.getAttribute('data-rentalid'); // Cập nhật rental id vào modal thanh toán 
+                                document.getElementById('modal-rental-id').value = rentalId; // Hiển thị modal thanh toán 
 
+                                //paymentModal.show();
+                            });
+                        });
 
                         // /
 

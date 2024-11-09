@@ -7,33 +7,19 @@
 
                 <div class="mt-5 container">
                     <div class="d-flex justify-content-between">
-                        <h1>Manage Rooms</h1>
+                        <h1>Manage Services</h1>
                         <!-- Button trigger modal -->
                         <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                             data-bs-target="#staticBackdrop">
-                            Add new rooms
+                            Add new services
                         </button>
                     </div>
                     <hr />
                     <div class="row">
-                        <div class="col-8 offset-2">
-                            <div class="input-group">
-                                <div class="input-group-btn search-panel">
-                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle"
-                                        data-bs-toggle="dropdown" aria-expanded="false">
-                                        <span id="search_concept">Filter by</span> <span class="caret"></span>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu">
-                                        <li><a class="dropdown-item filter" data-filter="STANDARD">Standard</a></li>
-                                        <li><a class="dropdown-item filter" data-filter="DELUXE">Deluxe</a></li>
-                                        <li><a class="dropdown-item filter" data-filter="VIP">VIP</a></li>
-                                        <li>
-                                            <hr class="dropdown-divider">
-                                        </li>
-                                        <li><a class="dropdown-item filter" data-filter="anything">Anything</a></li>
-                                    </ul>
 
-                                </div>
+                        <div class="col-8 offset-2">
+
+                            <div class="input-group">
                                 <input type="text" id="search-bar" class="form-control" placeholder="Search term...">
                                 <button class="btn btn-outline-secondary" type="button" id="search-button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -44,43 +30,38 @@
                                 </button>
                             </div>
                         </div>
+
                     </div>
-
-
 
                     <table class="table table-hover my-4">
                         <thead>
                             <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Room ID</th>
-                                <th scope="col">Room name</th>
-                                <th scope="col">Room type</th>
-                                <th scope="col">Area</th>
+                                <th scope="col">Service ID</th>
+                                <th scope="col">Service Name</th>
                                 <th scope="col">Price</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <c:forEach var="room" items="${roomList}" varStatus="loop">
+                            <c:forEach var="service" items="${serviceList}" varStatus="loop">
                                 <tr>
                                     <th scope="row">${loop.index + 1}</th>
-                                    <td>${room.id}</td>
-                                    <td>${room.roomName}</td>
-                                    <td>${room.roomType}</td>
-                                    <td>${room.area}</td>
-                                    <td>${room.rentalPrice}</td>
+                                    <td>${service.id}</td>
+                                    <td>${service.serviceName}</td>
+                                    <td>${service.price}</td>
                                     <td>
-                                        <a class="btn btn-warning mx-2" href="room/update/${room.id}">Update</a>
-                                        <button class="btn btn-danger delete-room" data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal" data-roomname="${room.roomName}"
-                                            data-id="${room.id}">Delete</button>
+                                        <a class="btn btn-warning mx-2" href="service/update/${service.id}">Update</a>
+                                        <button class="btn btn-danger delete-service" data-bs-toggle="modal"
+                                            data-bs-target="#deleteServiceModal" data-serviceid="${service.id}"
+                                            data-servicename="${service.serviceName}">Delete</button>
                                     </td>
                                 </tr>
                             </c:forEach>
-
                         </tbody>
-
                     </table>
+
+
 
                     <nav aria-label="Page navigation">
                         <div class="d-flex justify-content-center gap-4">
@@ -89,10 +70,10 @@
                                 <ul class="pagination d-flex justify-content-center">
                                     <c:choose>
                                         <c:when test="${currentPage > 1}">
-                                            <c:url var="prevUrl" value="/room">
+                                            <c:url var="prevUrl" value="/service">
                                                 <c:param name="pageNum" value="${currentPage - 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
-                                                <c:param name="roomType" value="${roomType}" />
+
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${prevUrl}" class="page-link">
@@ -110,10 +91,10 @@
                                     </c:choose>
 
                                     <c:forEach var="page" items="${pageArray}">
-                                        <c:url var="pageUrl" value="/room">
+                                        <c:url var="pageUrl" value="/service">
                                             <c:param name="pageNum" value="${page}" />
                                             <c:param name="searchTerm" value="${searchTerm}" />
-                                            <c:param name="roomType" value="${roomType}" />
+
                                         </c:url>
                                         <li class="page-item${currentPage == page ? ' active' : ''}">
                                             <a role="button" href="${pageUrl}" class="page-link">${page}</a>
@@ -122,10 +103,10 @@
 
                                     <c:choose>
                                         <c:when test="${currentPage < totalPages}">
-                                            <c:url var="nextUrl" value="/room">
+                                            <c:url var="nextUrl" value="/service">
                                                 <c:param name="pageNum" value="${currentPage + 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
-                                                <c:param name="roomType" value="${roomType}" />
+
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${nextUrl}" class="page-link">
@@ -141,7 +122,6 @@
                                             </li>
                                         </c:otherwise>
                                     </c:choose>
-
                                 </ul>
 
 
@@ -165,66 +145,44 @@
                                 aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form:form action="/room" method="post" modelAttribute="newRoom">
+                                        <form:form action="/service" method="post" modelAttribute="newService">
                                             <div class="modal-header">
-                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Add new room</h1>
+                                                <h1 class="modal-title fs-5" id="staticBackdropLabel">Add New Service
+                                                </h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
-                                            <c:set var="errorName">
-                                                <form:errors path="roomName" cssClass="invalid-feedback" />
-                                            </c:set>
-                                            <c:set var="errorArea">
-                                                <form:errors path="area" cssClass="invalid-feedback" />
+
+                                            <c:set var="errorServiceName">
+                                                <form:errors path="serviceName" cssClass="invalid-feedback" />
                                             </c:set>
                                             <c:set var="errorPrice">
-                                                <form:errors path="rentalPrice" cssClass="invalid-feedback" />
-                                            </c:set>
-                                            <c:set var="errorRoomType">
-                                                <form:errors path="roomType" cssClass="invalid-feedback" />
+                                                <form:errors path="price" cssClass="invalid-feedback" />
                                             </c:set>
 
                                             <div class="modal-body">
-                                                <div class="modal-body">
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:input type="text" path="roomName"
-                                                            class="form-control ${not empty errorName ? 'is-invalid' : ''}"
-                                                            placeholder="Room Name" />
-                                                        <label for="roomName">Room Name</label>
-                                                        ${errorName}
-                                                    </div>
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:input type="text" path="area"
-                                                            class="form-control ${not empty errorArea ? 'is-invalid' : ''}"
-                                                            placeholder="Area" />
-                                                        <label for="area">Area</label>
-                                                        ${errorArea}
-                                                    </div>
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:input type="text" path="rentalPrice"
-                                                            class="form-control ${not empty errorPrice ? 'is-invalid' : ''}"
-                                                            id="rentalPrice" placeholder="Rental Price" />
-                                                        <label for="rentalPrice">Rental Price</label>
-                                                        ${errorPrice}
-                                                    </div>
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:select path="roomType"
-                                                            class="form-select ${not empty errorRoomType ? 'is-invalid' : ''}"
-                                                            id="roomType">
-                                                            <form:option value="" label="Select Room Type" />
-                                                            <form:options items="${roomTypes}" />
-                                                        </form:select>
-                                                        <label for="roomType">Room Type</label>
-                                                        ${errorRoomType}
-                                                    </div>
+                                                <div class="form-floating mb-3 col-12">
+                                                    <form:input type="text" path="serviceName"
+                                                        class="form-control ${not empty errorServiceName ? 'is-invalid' : ''}"
+                                                        placeholder="Service Name" />
+                                                    <label for="serviceName">Service Name</label>
+                                                    ${errorServiceName}
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary"
-                                                        data-bs-dismiss="modal">Close</button>
-                                                    <button type="submit" class="btn btn-primary">Add</button>
+                                                <div class="form-floating mb-3 col-12">
+                                                    <form:input type="number" path="price"
+                                                        class="form-control ${not empty errorPrice ? 'is-invalid' : ''}"
+                                                        placeholder="Price" />
+                                                    <label for="price">Price</label>
+                                                    ${errorPrice}
                                                 </div>
                                             </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">Close</button>
+                                                <button type="submit" class="btn btn-primary">Add</button>
+                                            </div>
                                         </form:form>
+
 
 
 
@@ -234,20 +192,21 @@
 
                         </div>
                         <div>
-                            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                                aria-hidden="true" data-bs-keyboard="false" data-bs-backdrop="static">
+                            <div class="modal fade" id="deleteServiceModal" tabindex="-1"
+                                aria-labelledby="deleteServiceModalLabel" aria-hidden="true" data-bs-keyboard="false"
+                                data-bs-backdrop="static">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form id="deleteForm" action="/room/delete" method="post">
+                                        <form id="deleteServiceForm" action="/service/delete" method="post">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="exampleModalLabel">Modal delete</h5>
+                                                <h5 class="modal-title" id="deleteServiceModalLabel">Delete Service</h5>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                             </div>
                                             <div class="modal-body">
+                                                <p>Delete service: <span id="modal-service-name"></span></p>
                                                 <input type="hidden" name="_csrf" value="${_csrf.token}" />
-                                                <p>Delete room name: <span id="modal-roomname"></span></p>
-                                                <input type="hidden" name="id" id="modal-room-id">
+                                                <input type="hidden" name="id" id="modal-service-id">
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
@@ -255,32 +214,41 @@
                                                 <button type="submit" class="btn btn-danger">Delete</button>
                                             </div>
                                         </form>
-
                                     </div>
                                 </div>
                             </div>
-
                         </div>
+
+
+
+
                     </div>
                 </div>
                 <script>
-                    document.addEventListener("DOMContentLoaded", () => {
-                        const modalElement = document.getElementById('exampleModal');
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const modalElement = document.getElementById('deleteServiceModal');
                         const modal = new bootstrap.Modal(modalElement);
+
                         // JavaScript mở modal khi người dùng nhấn nút xóa
-                        const deleteButtons = document.querySelectorAll('.delete-room');
+                        const deleteButtons = document.querySelectorAll('.delete-service');
                         deleteButtons.forEach(button => {
                             button.addEventListener('click', () => {
                                 // Lấy dữ liệu từ thuộc tính data-* của nút
-                                const username = button.getAttribute('data-roomname');
-                                const userId = button.getAttribute('data-id');
+                                const serviceName = button.getAttribute('data-servicename');
+                                const serviceId = button.getAttribute('data-serviceid');
 
-                                // Cập nhật tên người dùng vào modal
-                                document.getElementById('modal-roomname').textContent = username;
-                                document.getElementById('modal-room-id').value = userId;
+                                // Cập nhật tên dịch vụ vào modal
+                                document.getElementById('modal-service-name').textContent = serviceName;
+                                document.getElementById('modal-service-id').value = serviceId;
 
+                                // Hiển thị modal
+                                modal.show();
                             });
                         });
+
+
+
+                        console.log("dasdasd");
 
                         // /
 
@@ -300,20 +268,7 @@
                             }
 
                         });
-                        const dropdown = document.querySelectorAll(".filter");
-                        dropdown.forEach((item) => {
-                            item.addEventListener('click', (e) => {
-                                let fullLink = window.location.href;
-                                const url = new URL(fullLink);
-                                if (item.getAttribute('data-filter') === 'any') {
-                                    url.searchParams.delete('roomType')
-                                    window.location.href = url
-                                } else {
-                                    url.searchParams.set('roomType', (item.getAttribute('data-filter')));
-                                    window.location.href = url
-                                }
-                            })
-                        })
+
                         const pageButton = document.querySelector('.page');
                         const pageInput = document.querySelector('.page-input');
                         pageButton.addEventListener('click', () => {
@@ -337,7 +292,12 @@
                             let pageValue = url.searchParams.get('searchTerm');
                             document.getElementById('search-bar').value = pageValue;
                         }
+
+
+
                     })
+
+
                 </script>
 
 
