@@ -18,7 +18,8 @@
                     <div class="row">
                         <div class="col-8 offset-2">
                             <div class="input-group">
-                                <input type="text" id="search-bar" class="form-control" placeholder="Search term...">
+                                <input type="text" id="search-bar" value="${searchTerm}" class="form-control"
+                                    placeholder="Search term...">
                                 <button class="btn btn-outline-secondary" type="button" id="search-button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                         class="bi bi-search" viewbox="0 0 16 16">
@@ -51,12 +52,30 @@
                                     <td>${staff.fullName}</td>
                                     <td>${staff.birthDate}</td>
                                     <td>${staff.phoneNumber}</td>
-                                    <td>
-                                        <a class="btn btn-warning mx-2" href="staff/update/${staff.id}">Update</a>
-                                        <button class="btn btn-danger delete-staff" data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal" data-username="${staff.fullName}"
-                                            data-id="${staff.id}">Delete</button>
+                                    <td class="d-flex gap-3">
+
+                                        <c:if test="${staff.id != sessionScope.staffId}">
+                                            <form action="/staff/approve" method="POST" id="approve_${staff.id}"
+                                                class="d-none">
+                                                <input type="hidden" name="page" value="${currentPage}">
+                                                <input type="hidden" name="_csrf" value="${_csrf.token}" />
+                                                <input type="hidden" name="id" value="${staff.id}">
+                                            </form>
+                                            <button type="button"
+                                                onclick=" document.getElementById('approve_${staff.id}').submit();"
+                                                class="btn ${staff.approved ? 'btn-danger' : 'btn-success'}">
+                                                ${staff.approved ? 'Block' : 'Approve'}
+                                            </button>
+                                            <button class="btn btn-danger delete-staff" data-bs-toggle="modal"
+                                                data-bs-target="#exampleModal" data-username="${staff.fullName}"
+                                                data-id="${staff.id}">Delete</button>
+                                        </c:if>
+                                        <a class="btn btn-warning" href="staff/update/${staff.id}">Update</a>
+
                                     </td>
+
+
+
                                 </tr>
                             </c:forEach>
 
@@ -125,7 +144,8 @@
                             </div>
                             <div class="col-2">
                                 <div class="input-group">
-                                    <input type="number" class="form-control page-input" placeholder="Nhập số trang">
+                                    <input type="number" value="${currentPage}" class="form-control page-input"
+                                        placeholder="Nhập số trang">
                                     <button class="btn btn-outline-secondary page" type="button">
                                         <i class="bi bi-list-ol"></i>
                                     </button>
@@ -142,7 +162,8 @@
                                 aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <form:form action="/staff" method="post" modelAttribute="newStaff">
+                                        <form:form action="/staff" method="post" modelAttribute="newStaff"
+                                            enctype="multipart/form-data">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Add new user</h1>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"
@@ -156,6 +177,9 @@
                                             </c:set>
                                             <c:set var="errorPhone">
                                                 <form:errors path="phoneNumber" cssClass="invalid-feedback" />
+                                            </c:set>
+                                            <c:set var="errorBirthday">
+                                                <form:errors path="birthDate" cssClass="invalid-feedback" />
                                             </c:set>
 
                                             <div class="modal-body">
@@ -175,9 +199,11 @@
                                                         ${errorPass}
                                                     </div>
                                                     <div class="form-floating mb-3 col-12">
-                                                        <form:input type="date" path="birthDate" class="form-control"
+                                                        <form:input type="date" path="birthDate"
+                                                            class="form-control ${not empty errorBirthday ? 'is-invalid' : ''}"
                                                             placeholder="Birth Date" />
                                                         <label for="birthDate">Birth Date</label>
+                                                        ${errorBirthday}
                                                     </div>
                                                     <div class="form-floating mb-3 col-12">
                                                         <form:input type="text" path="phoneNumber"
@@ -186,7 +212,21 @@
                                                         <label for="phoneNumber">Phone Number</label>
                                                         ${errorPhone}
                                                     </div>
+                                                    <div class="mb-3">
+                                                        <label for="formFile" class="form-label">Avatar</label>
+                                                        <input accept="image/png, image/gif, image/jpeg"
+                                                            class="form-control file-input" type="file" id="formFile"
+                                                            name="nFile">
+
+                                                    </div>
+                                                    <div style="border-style: dashed !important; height: 20vh;"
+                                                        class="mb-3 w-100 border border-secondary d-flex justify-content-center">
+                                                        <div class="previewDivImage position-relative">
+
+                                                        </div>
+                                                    </div>
                                                 </div>
+
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
@@ -291,17 +331,6 @@
                         url.searchParams.set('pageNum', pageNum)
                         window.location.href = url
                     })
-                    ///tu dong them vao input
-                    let fullLink = window.location.href;
-                    let url = new URL(fullLink);
-                    if (url.searchParams.has('pageNum')) {
-                        let pageValue = url.searchParams.get('pageNum');
-                        pageInput.value = pageValue;
-                    }
-                    if (url.searchParams.has('searchTerm')) {
-                        let pageValue = url.searchParams.get('searchTerm');
-                        document.getElementById('search-bar').value = pageValue;
-                    }
 
                 </script>
 

@@ -1,6 +1,7 @@
 package com.vn.ManageHotel.domain;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -8,9 +9,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -32,7 +35,40 @@ public class Staff {
     private String password;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Past(message = "Ngày sinh phải là ngày trong quá khứ")
     private LocalDate birthDate;
+
+    private String avatar;
+    private boolean isApproved;
+    @OneToMany(mappedBy = "createdBy") // Đảm bảo rằng 1 Staff có thể tạo nhiều Customer
+    private List<Customer> customers;
+
+    @OneToMany(mappedBy = "createdBy") // Đảm bảo rằng 1 Staff có thể tạo nhiều Rental
+    private List<Rental> rentals;
+
+    public List<Customer> getCustomers() {
+        return customers;
+    }
+
+    public void setCustomers(List<Customer> customers) {
+        this.customers = customers;
+    }
+
+    public List<Rental> getRentals() {
+        return rentals;
+    }
+
+    public void setRentals(List<Rental> rentals) {
+        this.rentals = rentals;
+    }
+
+    public boolean isApproved() {
+        return isApproved;
+    }
+
+    public void setApproved(boolean isApproved) {
+        this.isApproved = isApproved;
+    }
 
     // Getters and Setters
     public Long getId() {
@@ -73,5 +109,13 @@ public class Staff {
 
     public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

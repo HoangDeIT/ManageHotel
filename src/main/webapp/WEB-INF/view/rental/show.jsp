@@ -29,9 +29,25 @@
                                 ngày</button>
                         </form>
 
-                        <div class="col-8">
+                        <div class="col-10">
 
                             <div class="input-group">
+                                <div class="input-group-btn search-panel mx-2">
+                                    <button type="button" class="btn btn-outline-secondary dropdown-toggle"
+                                        data-bs-toggle="dropdown" aria-expanded="false">
+                                        <span id="search_concept">Filter by</span> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a class="dropdown-item filter" data-filter="0">Not Paid</a></li>
+                                        <li><a class="dropdown-item filter" data-filter="1">Paid</a></li>
+                                        <li>
+                                            <hr class="dropdown-divider">
+                                        </li>
+                                        <li><a class="dropdown-item filter" data-filter="anything">Anything</a></li>
+                                    </ul>
+
+
+                                </div>
                                 <input type="text" id="search-bar" class="form-control" placeholder="Search term...">
                                 <button class="btn btn-outline-secondary" type="button" id="search-button">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -50,7 +66,7 @@
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Rental ID</th>
-                                <th scope="col">Customer Name</th>
+                                <th scope="col">Customers</th>
                                 <th scope="col">Room Name</th>
                                 <th scope="col">Start Date</th>
                                 <th scope="col">End Date</th>
@@ -63,23 +79,45 @@
                                 <tr>
                                     <th scope="row">${loop.index + 1}</th>
                                     <td>${rental.id}</td>
-                                    <td>${rental.customer.name}</td>
+                                    <td>
+                                        <ul>
+                                            <c:forEach var="customer" items="${rental.customers}">
+                                                <li>${customer.name}</li>
+                                            </c:forEach>
+                                        </ul>
+                                    </td>
                                     <td>${rental.room.roomName}</td>
                                     <td>${rental.startDate}</td>
                                     <td>${rental.endDate}</td>
                                     <td>${rental.deposit}</td>
-                                    <td> <a class="btn btn-warning mx-2" href="rental/update/${rental.id}">Update</a>
-                                        <button class="btn btn-danger delete-rental" data-bs-toggle="modal"
-                                            data-bs-target="#deleteRentalModal" data-rentalid="${rental.id}"
-                                            data-customername="${rental.customer.name}">Delete</button>
-                                        <button class="btn btn-success payment-rental" data-bs-toggle="modal"
-                                            data-bs-target="#paymentRentalModal" data-rentalid="${rental.id}"
-                                            data-customername="${rental.customer.name}">Thanh Toán</button>
+                                    <td>
+                                        <c:if test="${rental.status}">
+                                            <a class="btn btn-secondary mx-2"
+                                                href="rental/detail/${rental.id}">Detail</a>
+                                            <button class="btn btn-danger delete-rental" data-bs-toggle="modal"
+                                                data-bs-target="#deleteRentalModal" data-rentalid="${rental.id}"
+                                                data-customername="${rental.id}">Delete</button>
+                                        </c:if>
+
+                                        <!-- Nếu rental chưa thanh toán (status = false) -->
+                                        <c:if test="${!rental.status}">
+                                            <a class="btn btn-warning mx-2" href="rental/update/${rental.id}">Update</a>
+                                            <button class="btn btn-danger delete-rental" data-bs-toggle="modal"
+                                                data-bs-target="#deleteRentalModal" data-rentalid="${rental.id}"
+                                                data-customername="${rental.id}">Delete</button>
+                                            <button class="btn btn-success payment-rental" data-bs-toggle="modal"
+                                                data-bs-target="#paymentRentalModal" data-rentalid="${rental.id}">Thanh
+                                                Toán</button>
+                                            <button class="btn btn-info service-rental" data-bs-toggle="modal"
+                                                data-bs-target="#addServiceModal" data-rentalid="${rental.id}">Thêm dịch
+                                                vụ</button>
+                                        </c:if>
                                     </td>
                                 </tr>
                             </c:forEach>
                         </tbody>
                     </table>
+
 
                     <nav aria-label="Page navigation">
                         <div class="d-flex justify-content-center gap-4">
@@ -92,6 +130,7 @@
                                                 <c:param name="pageNum" value="${currentPage - 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
                                                 <c:param name="endDate" value="${endDate}" />
+                                                <c:param name="status1" value="${status1}" />
                                                 <c:param name="startDate" value="${startDate}" />
                                             </c:url>
                                             <li class="page-item">
@@ -115,6 +154,9 @@
                                             <c:param name="searchTerm" value="${searchTerm}" />
                                             <c:param name="endDate" value="${endDate}" />
                                             <c:param name="startDate" value="${startDate}" />
+
+                                            <c:param name="status1" value="${status1}" />
+
                                         </c:url>
                                         <li class="page-item${currentPage == page ? ' active' : ''}">
                                             <a role="button" href="${pageUrl}" class="page-link">${page}</a>
@@ -128,6 +170,7 @@
                                                 <c:param name="searchTerm" value="${searchTerm}" />
                                                 <c:param name="endDate" value="${endDate}" />
                                                 <c:param name="startDate" value="${startDate}" />
+                                                <c:param name="status1" value="${status1}" />
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${nextUrl}" class="page-link">
@@ -174,7 +217,7 @@
                                                     aria-label="Close"></button>
                                             </div>
                                             <c:set var="errorCustomer">
-                                                <form:errors path="customer" cssClass="invalid-feedback" />
+                                                <form:errors path="customers" cssClass="invalid-feedback" />
                                             </c:set>
                                             <c:set var="errorRoom">
                                                 <form:errors path="room" cssClass="invalid-feedback" />
@@ -191,14 +234,15 @@
 
                                             <div class="modal-body">
                                                 <div class="modal-body">
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:select path="customer"
+                                                    <div class="mb-3 col-12">
+                                                        <label for="customers">Customers</label>
+                                                        <form:select size="5" aria-label="multiple select example"
+                                                            path="customers" multiple="multiple"
                                                             class="form-control ${not empty errorCustomer ? 'is-invalid' : ''}">
-                                                            <form:option value="" label="Select Customer" />
+                                                            <form:option value="" label="Select Customers" />
                                                             <form:options items="${customers}" itemValue="id"
                                                                 itemLabel="idName" />
                                                         </form:select>
-                                                        <label for="customer">Customer</label>
                                                         ${errorCustomer}
                                                     </div>
                                                     <div class="form-floating mb-3 col-12">
@@ -233,11 +277,13 @@
                                                         ${errorDeposit}
                                                     </div>
                                                 </div>
+
                                                 <div class="modal-footer">
                                                     <button type="button" class="btn btn-secondary"
                                                         data-bs-dismiss="modal">Close</button>
                                                     <button type="submit" class="btn btn-primary">Add</button>
                                                 </div>
+                                            </div>
                                         </form:form>
 
 
@@ -289,23 +335,37 @@
                                             aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <form id="paymentForm" action="/payments/add" method="post"> <input
-                                                type="hidden" id="modal-rental-id" name="rental.id">
-                                            <div class="mb-3"> <label for="amount" class="form-label">Thành
-                                                    Tiền</label> <input type="number" class="form-control" id="amount"
-                                                    name="amount" required> </div>
-                                            <div class="mb-3"> <label for="paymentMethod" class="form-label">Hình
-                                                    Thức Thanh Toán</label> <input type="text" class="form-control"
-                                                    id="paymentMethod" name="paymentMethod" required> </div>
-                                            <div class="mb-3"> <label for="notes" class="form-label">Ghi Chú</label>
+                                        <form id="paymentForm" action="/rental/payment" method="post">
+                                            <input type="hidden" id="modal-rental-payment-id" name="rentalId" />
+
+                                            <div class="mb-3">
+                                                <label for="amount" class="form-label">Thành Tiền</label>
+                                                <input type="number" class="form-control" id="amount" name="amount"
+                                                    required />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="paymentMethod" class="form-label">Hình Thức Thanh
+                                                    Toán</label>
+                                                <input type="text" class="form-control" id="paymentMethod"
+                                                    name="paymentMethod" required />
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="notes" class="form-label">Ghi Chú</label>
                                                 <textarea class="form-control" id="notes" name="notes"></textarea>
                                             </div>
+
                                             <div class="mb-3">
                                                 <label for="paymentDate" class="form-label">Ngày Thanh Toán</label>
                                                 <input type="date" class="form-control" id="paymentDate"
-                                                    name="paymentDate" required>
+                                                    name="paymentDate" required />
                                             </div>
+
+                                            <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
                                         </form>
+
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary"
@@ -318,6 +378,49 @@
                             </div>
 
                         </div>
+
+                        <div class="modal fade" id="addServiceModal" tabindex="-1" data-bs-backdrop="static"
+                            aria-labelledby="addServiceModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="addServiceModalLabel">Thêm Dịch Vụ</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="serviceForm" action="/rental/addService" method="post">
+                                            <!-- Hidden field for rental ID -->
+                                            <input type="hidden" id="modal-rental-service-id" name="rentalId" value="">
+                                            <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
+                                            <div class="mb-3">
+                                                <label for="serviceId" class="form-label">Chọn Dịch Vụ</label>
+                                                <select name="serviceId" class="form-control" id="serviceId" required>
+                                                    <option value="">Chọn Dịch Vụ</option>
+                                                    <!-- Loop through services list -->
+                                                    <c:forEach var="service" items="${services}">
+                                                        <option value="${service.id}">${service.serviceName}</option>
+                                                    </c:forEach>
+                                                </select>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-bs-dismiss="modal">Đóng</button>
+                                        <button type="submit" class="btn btn-info"
+                                            onclick="document.getElementById('serviceForm').submit();">Thêm Dịch
+                                            Vụ</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+
                     </div>
                 </div>
                 <script>
@@ -346,9 +449,21 @@
                             const paymentModal = new bootstrap.Modal(document.getElementById('paymentRentalModal'));
                             button.addEventListener('click', () => { // Lấy dữ liệu từ thuộc tính data-* của nút 
                                 const rentalId = button.getAttribute('data-rentalid'); // Cập nhật rental id vào modal thanh toán 
-                                document.getElementById('modal-rental-id').value = rentalId; // Hiển thị modal thanh toán 
+                                document.getElementById('modal-rental-payment-id').value = rentalId; // Hiển thị modal thanh toán 
 
                                 //paymentModal.show();
+                            });
+                        });
+                        const serviceButtons = document.querySelectorAll('.service-rental');
+                        serviceButtons.forEach(button => {
+                            const serviceModal = new bootstrap.Modal(document.getElementById('addServiceModal'));
+                            button.addEventListener('click', () => {
+                                // Lấy dữ liệu từ thuộc tính data-* của nút
+                                const rentalId = button.getAttribute('data-rentalid');
+                                // Cập nhật rental id vào modal thêm dịch vụ
+                                document.getElementById('modal-rental-service-id').value = rentalId;
+                                // Hiển thị modal thêm dịch vụ
+                                //  serviceModal.show();
                             });
                         });
 
@@ -375,15 +490,16 @@
                             item.addEventListener('click', (e) => {
                                 let fullLink = window.location.href;
                                 const url = new URL(fullLink);
-                                if (item.getAttribute('data-filter') === 'any') {
-                                    url.searchParams.delete('filterBy')
-                                    window.location.href = url
+                                if (item.getAttribute('data-filter') === 'anything') {
+                                    url.searchParams.delete('status1');
+                                    window.location.href = url;
                                 } else {
-                                    url.searchParams.set('filterBy', (item.getAttribute('data-filter')));
-                                    window.location.href = url
+                                    url.searchParams.set('status1', item.getAttribute('data-filter'));
+                                    window.location.href = url;
                                 }
-                            })
-                        })
+                            });
+                        });
+
                         const pageButton = document.querySelector('.page');
                         const pageInput = document.querySelector('.page-input');
                         pageButton.addEventListener('click', () => {

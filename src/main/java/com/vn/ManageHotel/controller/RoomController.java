@@ -1,7 +1,11 @@
 package com.vn.ManageHotel.controller;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,7 +20,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.vn.ManageHotel.domain.Room;
 import com.vn.ManageHotel.service.RoomService;
 import com.vn.ManageHotel.utils.PaginationUtils;
-import com.vn.ManageHotel.utils.constant.RoomType;
 
 import jakarta.validation.Valid;
 
@@ -45,13 +48,34 @@ public class RoomController {
     @GetMapping("")
     public String getRooms(Model model, @RequestParam(value = "searchTerm", required = false) String searchTerm,
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
-            @RequestParam(value = "size", required = false, defaultValue = "2") int size,
-            @RequestParam(value = "roomType", required = false) String roomType) {
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "roomType", required = false, defaultValue = "anything") String roomType,
+            @RequestParam(value = "checkDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate checkDate) {
+        if (checkDate == null) {
+            checkDate = LocalDate.now();
+        }
+        if (roomType.equals("anything"))
+            roomType = null;
         if (model.containsAttribute("currentPage")) {
             pageNum = (int) model.asMap().get("currentPage");
         }
         int totalPages = roomService.getTotalPagesForRooms(searchTerm, size, roomType);
+        if (pageNum > totalPages)
+            pageNum = totalPages;
+        else if (pageNum <= 0)
+            pageNum = 1;
+
         List<Room> roomList = roomService.getPaginatedRooms(searchTerm, pageNum, size, roomType);
+        // Kiểm tra phòng còn trống vào ngày checkDate
+        Map<Long, Boolean> roomAvailabilityMap = new HashMap<>();
+        if (checkDate != null) {
+            for (Room room : roomList) {
+                boolean isAvailable = roomService.isRoomAvailable(room.getId(), checkDate);
+                roomAvailabilityMap.put(room.getId(), isAvailable);
+            }
+        }
+        model.addAttribute("checkDay", checkDate);
+        model.addAttribute("roomAvailabilityMap", roomAvailabilityMap);
         setupModel(model, roomList, totalPages, pageNum, searchTerm, new Room(), roomType);
         return "room/show";
     }

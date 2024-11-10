@@ -82,11 +82,12 @@
                         </li>
                 </aside>
                 <div class="main">
-                    <div class="d-flex justify-content-end w-100 shadow-lg p-3 dropdown">
+                    <div class="d-flex align-items-center justify-content-end  w-100 shadow-lg p-3 dropdown">
                         <p>
-                            Hello admin
+                            Hello ${sessionScope.fullName}
                         </p>
-                        <img id="dropdownMenuButton1" data-bs-toggle="dropdown" src="" alt="Avatar" class="avatar">
+                        <img id="dropdownMenuButton1" data-bs-toggle="dropdown"
+                            src="/images/avatar/${sessionScope.avatar}" alt=" Avatar" class="avatar">
                         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                             <li>
                                 <form action="/logout" method="post">

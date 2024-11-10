@@ -116,7 +116,7 @@
 
                         <nav id="sidebar" class="col-lg-2 col-md-4 position-sticky">
 
-                            <div class="sidebar-header" onclick="window.location.replace(`{{appURL}}/admin/brand`);">
+                            <div class="sidebar-header" onclick="window.location.replace(`/service`);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                     class="bi bi-house" viewBox="0 0 16 16">
                                     <path
@@ -175,6 +175,7 @@
                                                         <form:input type="text" path="area"
                                                             class="form-control ${not empty errorArea ? 'is-invalid' : ''}"
                                                             placeholder="Area" />
+
                                                         <label for="area">Area</label>
                                                         ${errorArea}
                                                     </div>
@@ -195,7 +196,8 @@
                                                         <label for="roomType">Room Type</label>
                                                         ${errorRoomType}
                                                     </div>
-
+                                                    <form:input type="hidden" path="rentals" class="form-control"
+                                                        placeholder="Area" />
                                                     <button type="submit" class="btn btn-warning">Update</button>
                                                 </div>
                                             </form:form>
@@ -206,10 +208,37 @@
 
                                         </div>
                                     </div>
+                                    <div class="bg-white mt-4">
+                                        <h4>Lịch sử thuê phòng</h4>
+                                        <table class="table table-bordered mt-3">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Ngày thuê</th>
+                                                    <th scope="col">Ngày trả</th>
+                                                    <th scope="col">Phòng</th>
+                                                    <th scope="col">Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <!-- Lặp qua các rental của phòng -->
+                                                <c:forEach var="rental" items="${roomById.rentals}">
+                                                    <tr>
+                                                        <td>${rental.startDate}</td>
+                                                        <td>${rental.endDate}</td>
+                                                        <td>${rental.room.roomName}</td>
+                                                        <td>${rental.status ? 'Đã trả' : 'Chưa trả'}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
                                 </main>
                             </div>
                         </div>
+
                     </div>
+
                 </body>
 
                 <script>

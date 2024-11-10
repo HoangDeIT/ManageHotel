@@ -48,12 +48,16 @@ public class ServiceController {
     public String getServices(Model model,
             @RequestParam(value = "searchTerm", required = false) String searchTerm,
             @RequestParam(value = "pageNum", required = false, defaultValue = "1") int pageNum,
-            @RequestParam(value = "size", required = false, defaultValue = "2") int size) {
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size) {
         if (model.containsAttribute("currentPage")) {
             pageNum = (int) model.asMap().get("currentPage");
         }
 
         int totalPages = serviceService.getTotalPagesServices(searchTerm, size);
+        if (pageNum > totalPages)
+            pageNum = totalPages;
+        else if (pageNum <= 0)
+            pageNum = 1;
         List<Service> serviceList = serviceService.getPaginatedServices(searchTerm, pageNum, size);
 
         setupServiceModel(model, serviceList, totalPages, pageNum, searchTerm, new Service());
@@ -66,7 +70,7 @@ public class ServiceController {
         if (bindingResult.hasErrors()) {
             List<Service> serviceList = serviceService.getPaginatedServices(null, 1, 10);
             int totalPages = serviceService.getTotalPagesServices(null, 10);
-            setupServiceModel(model, serviceList, totalPages, 1, null, service);
+            setupServiceModel(model, serviceList, totalPages, 10, null, service);
             model.addAttribute("errors", bindingResult);
             return "service/show";
         }

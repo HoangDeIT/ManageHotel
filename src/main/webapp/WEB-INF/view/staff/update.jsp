@@ -23,6 +23,7 @@
                         href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
                     <link rel="stylesheet"
                         href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+                    <script src="/js/previewImgae.js" defer></script>
                     <style>
                         body {
                             font-family: 'Poppins', sans-serif;
@@ -116,13 +117,13 @@
 
                         <nav id="sidebar" class="col-lg-2 col-md-4 position-sticky">
 
-                            <div class="sidebar-header" onclick="window.location.replace(`{{appURL}}/admin/brand`);">
+                            <div class="sidebar-header" onclick="window.location.replace(`/staff`);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                     class="bi bi-house" viewBox="0 0 16 16">
                                     <path
                                         d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
                                 </svg>
-                                <h3>Email brand</h3>
+                                <h3>List staff</h3>
                             </div>
                             <ul class="list-unstyled components">
 
@@ -149,7 +150,7 @@
                                         <div
                                             class="p-5 col-8 rounded bg-white d-flex justify-content-center align-items-center flex-column">
                                             <form:form action="/staff/update" method="post" modelAttribute="staffById"
-                                                class="col-8">
+                                                enctype="multipart/form-data" class="col-8">
                                                 <form:input type="text" path="id" style="display: none;" />
                                                 <c:set var="errorName">
                                                     <form:errors path="fullName" cssClass="invalid-feedback" />
@@ -157,7 +158,9 @@
                                                 <c:set var="errorPhone">
                                                     <form:errors path="phoneNumber" cssClass="invalid-feedback" />
                                                 </c:set>
-
+                                                <c:set var="errorBirthDay">
+                                                    <form:errors path="birthDate" cssClass="invalid-feedback" />
+                                                </c:set>
                                                 <div class="modal-body">
                                                     <div class="form-floating mb-3 col-12">
                                                         <form:input type="text" path="fullName"
@@ -170,9 +173,11 @@
                                                         class="form-control ${not empty errorName ? 'is-invalid' : ''}"
                                                         placeholder="Full Name" value="thisIsNotPassss" />
                                                     <div class="form-floating mb-3 col-12">
-                                                        <form:input type="date" path="birthDate" class="form-control"
+                                                        <form:input type="date" path="birthDate"
+                                                            class="form-control ${not empty errorBirthDay ? 'is-invalid' : ''}"
                                                             placeholder="Birth Date" />
                                                         <label for="birthDate">Birth Date</label>
+                                                        ${errorBirthDay}
                                                     </div>
                                                     <div class="form-floating mb-3 col-12">
                                                         <form:input type="text" path="phoneNumber"
@@ -181,7 +186,24 @@
                                                         <label for="phoneNumber">Phone Number</label>
                                                         ${errorPhone}
                                                     </div>
-
+                                                    <div class="mb-3">
+                                                        <label for="formFile" class="form-label">Avatar</label>
+                                                        <input accept="image/png, image/gif, image/jpeg"
+                                                            class="form-control file-input" type="file" id="formFile"
+                                                            name="nFile">
+                                                    </div>
+                                                    <div style="border-style: dashed !important; height: 20vh;"
+                                                        class="mb-3 w-100 border border-secondary d-flex justify-content-center">
+                                                        <div class="previewDivImage position-relative">
+                                                            <c:if test="${not empty staffAvatar}">
+                                                                <img src="/images/avatar/${staffAvatar}" alt="No image"
+                                                                    class="previewImg h-100" />
+                                                            </c:if>
+                                                            <c:if test="${empty staffAvatar}">
+                                                                <span>Không có hình ảnh</span>
+                                                            </c:if>
+                                                        </div>
+                                                    </div>
                                                     <button type="submit" class="btn btn-warning">Update</button>
                                                 </div>
                                             </form:form>
@@ -203,21 +225,22 @@
                         });
                     });
                 </script>
-                {% if status %}
-                <script>
-                    Toastify({
-                        text: "{{ status }}",
-                        className: "info",
-                        duration: 3000,
-                        close: true,
-                        gravity: "top", // `top` or `bottom`
-                        position: "right",
-                        style: {
-                            background: "linear-gradient(to right, #00b09b, #96c93d)"
-                        }
-                    }).showToast();
-                </script>
-                {% endif %}
-                <script src="/js/previewImgae.js" defer></script>
+                <c:if test="${not empty status}">
+                    <script>
+                        Toastify({
+                            text: "${status}",
+                            className: "info",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top", // `top` or `bottom`
+                            position: "right",
+                            style: {
+                                background: "linear-gradient(to right, #00b09b, #96c93d)"
+                            }
+                        }).showToast();
+                    </script>
+                </c:if>
+
+
 
                 </html>

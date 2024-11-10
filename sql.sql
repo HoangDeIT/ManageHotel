@@ -102,7 +102,7 @@ INSERT INTO customer (name, address, phone_number) VALUES
 ('Phạm Thị D', '101 Đường 4, Quận 4, TP.HCM', '0904567890'),
 ('Võ Văn E', '112 Đường 5, Quận 5, TP.HCM', '0905678901');
 
----Room
+---
 INSERT INTO Room (room_name, room_type, area, rental_price) VALUES
 ('Room 101', 'STANDARD', 30.0, 100.0),
 ('Room 102', 'DELUXE', 40.0, 150.0),
@@ -195,6 +195,9 @@ END //
 DELIMITER ;
 ---Logic lay du lieu cho rentals
 
+
+
+---
 DELIMITER //
 
 CREATE PROCEDURE getPaginatedRentals(
@@ -202,45 +205,46 @@ CREATE PROCEDURE getPaginatedRentals(
     IN pageNum INT,
     IN pageSize INT,
     IN startDate DATE,
-    IN endDate DATE
+    IN endDate DATE,
+    IN status BOOLEAN
 )
 BEGIN
     DECLARE offset INT;
 
+    -- Tính toán offset cho phân trang
     SET offset = (pageNum - 1) * pageSize;
 
     IF searchTerm IS NULL OR searchTerm = '' THEN
+        -- Truy vấn không có từ khóa tìm kiếm
         SELECT r.* 
         FROM rental r
-        LEFT JOIN payment p ON r.id = p.rental_id
-        WHERE p.rental_id IS NULL
-        AND r.start_date BETWEEN startDate AND endDate
+        WHERE r.start_date BETWEEN startDate AND endDate
+        AND r.status = status
         LIMIT pageSize OFFSET offset;
     ELSE
-        SELECT r.* 
+        -- Truy vấn có từ khóa tìm kiếm
+        SELECT DISTINCT r.* 
         FROM rental r
-        LEFT JOIN payment p ON r.id = p.rental_id
-        WHERE p.rental_id IS NULL
-        AND r.start_date BETWEEN startDate AND endDate
-        AND (r.customer_id IN (SELECT id FROM customer WHERE name LIKE CONCAT('%', searchTerm, '%')) 
-             OR r.room_id IN (SELECT id FROM room WHERE room_name LIKE CONCAT('%', searchTerm, '%')))
+        JOIN rental_customer rc ON r.id = rc.rental_id
+        JOIN customer c ON rc.customer_id = c.id
+        JOIN room ro ON r.room_id = ro.id
+        WHERE r.start_date BETWEEN startDate AND endDate
+        AND r.status = status
+        AND (c.name LIKE CONCAT('%', searchTerm, '%') 
+        OR ro.room_name LIKE CONCAT('%', searchTerm, '%'))
         LIMIT pageSize OFFSET offset;
     END IF;
 END //
 
 DELIMITER ;
-
-
-
-
----
 DELIMITER //
 
 CREATE FUNCTION getTotalPagesForRentals(
     searchTerm VARCHAR(255),
     pageSize INT,
     startDate DATE,
-    endDate DATE
+    endDate DATE,
+    status BOOLEAN
 ) RETURNS INT
 READS SQL DATA
 BEGIN
@@ -248,59 +252,31 @@ BEGIN
     DECLARE totalPages INT;
 
     IF searchTerm IS NULL OR searchTerm = '' THEN
+        -- Truy vấn khi không có từ khóa tìm kiếm
         SELECT COUNT(*) INTO totalRecords 
         FROM rental r
-        WHERE r.start_date BETWEEN startDate AND endDate;
+        WHERE r.start_date BETWEEN startDate AND endDate
+        AND r.status = status;
     ELSE
-        SELECT COUNT(*) INTO totalRecords 
+        -- Truy vấn với từ khóa tìm kiếm
+        SELECT COUNT(DISTINCT r.id) INTO totalRecords 
         FROM rental r
-        JOIN customer c ON r.customer_id = c.id
+        JOIN rental_customer rc ON r.id = rc.rental_id
+        JOIN customer c ON rc.customer_id = c.id
         JOIN room ro ON r.room_id = ro.id
         WHERE r.start_date BETWEEN startDate AND endDate
+        AND r.status = status
         AND (c.name LIKE CONCAT('%', searchTerm, '%') 
-             OR ro.room_name LIKE CONCAT('%', searchTerm, '%'));
+        OR ro.room_name LIKE CONCAT('%', searchTerm, '%'));
     END IF;
 
+    -- Tính tổng số trang
     SET totalPages = CEIL(totalRecords / pageSize);
 
     RETURN totalPages;
 END //
 
 DELIMITER ;
-
-DELIMITER //
-
-CREATE PROCEDURE getPaginatedRentals(
-    IN searchTerm VARCHAR(255),
-    IN pageNum INT,
-    IN pageSize INT,
-    IN startDate DATE,
-    IN endDate DATE
-)
-BEGIN
-    DECLARE offset INT;
-
-    SET offset = (pageNum - 1) * pageSize;
-
-    IF searchTerm IS NULL OR searchTerm = '' THEN
-        SELECT r.* 
-        FROM rental r
-        WHERE r.start_date BETWEEN startDate AND endDate
-        LIMIT pageSize OFFSET offset;
-    ELSE
-        SELECT r.* 
-        FROM rental r
-        JOIN customer c ON r.customer_id = c.id
-        JOIN room ro ON r.room_id = ro.id
-        WHERE r.start_date BETWEEN startDate AND endDate
-        AND (c.name LIKE CONCAT('%', searchTerm, '%')) 
-        OR (ro.room_name LIKE CONCAT('%', searchTerm, '%'))
-        LIMIT pageSize OFFSET offset;
-    END IF;
-END //
-
-DELIMITER ;
-
 
 
 ----SERVICE

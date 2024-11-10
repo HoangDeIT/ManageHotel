@@ -115,7 +115,7 @@
                     <div class="wrapper d-flex">
 
                         <nav id="sidebar" class="col-lg-2 col-md-4 position-sticky">
-                            <div class="sidebar-header" onclick="window.location.replace(`{{appURL}}/admin/brand`);">
+                            <div class="sidebar-header" onclick="window.location.replace(`/rental`)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                     class="bi bi-house" viewBox="0 0 16 16">
                                     <path
@@ -128,7 +128,7 @@
                                 <c:forEach var="rental" items="${rentalList}">
                                     <li class="${rental.id == rentalById.id ? 'active' : ''}">
                                         <a href="/rental/update/${rental.id}">${rental.id} -
-                                            ${rental.customer.name} - ${rental.room.roomName}</a>
+                                            - ${rental.room.roomName}</a>
                                     </li>
                                 </c:forEach>
 
@@ -142,7 +142,7 @@
                                     <i class="fa fa-align-justify"></i>
                                 </button>
                             </nav>
-                            <div style="margin-top: 25vh;">
+                            <div style="margin-top: 5vh;">
                                 <main class="container">
                                     <div class="d-flex justify-content-center">
                                         <div
@@ -160,8 +160,37 @@
                                                 <c:set var="errorDeposit">
                                                     <form:errors path="deposit" cssClass="invalid-feedback" />
                                                 </c:set>
+                                                <c:set var="errorCustomerId">
+                                                    <form:errors path="customers" cssClass="invalid-feedback" />
+                                                </c:set>
+                                                <c:set var="errorRoomId">
+                                                    <form:errors path="room" cssClass="invalid-feedback" />
+                                                </c:set>
 
                                                 <div class="modal-body">
+                                                    <div class="mb-3 col-12">
+                                                        <label for="customers">Customer</label>
+                                                        <form:select size="5" path="customers" multiple="multiple"
+                                                            class="form-select ${not empty errorCustomerId ? 'is-invalid' : ''}"
+                                                            id="customers">
+                                                            <form:option value="" label="Select Customer" />
+                                                            <form:options items="${customers}" itemValue="id"
+                                                                itemLabel="idName" />
+                                                        </form:select>
+
+                                                        ${errorCustomerId}
+                                                    </div>
+                                                    <div class="form-floating mb-3 col-12">
+                                                        <form:select path="room"
+                                                            class="form-select ${not empty errorRoomId ? 'is-invalid' : ''}"
+                                                            id="room">
+                                                            <form:option value="" label="Select Room" />
+                                                            <form:options items="${rooms}" itemValue="id"
+                                                                itemLabel="idRoomName" />
+                                                        </form:select>
+                                                        <label for="room">Room</label>
+                                                        ${errorRoomId}
+                                                    </div>
                                                     <div class="form-floating mb-3 col-12">
                                                         <form:input type="date" path="startDate"
                                                             class="form-control ${not empty errorStartDate ? 'is-invalid' : ''}"
@@ -183,39 +212,114 @@
                                                         <label for="deposit">Deposit</label>
                                                         ${errorDeposit}
                                                     </div>
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:select path="customer.id"
-                                                            class="form-select ${not empty errorCustomerId ? 'is-invalid' : ''}"
-                                                            id="customer">
-                                                            <form:option value="" label="Select Customer" />
-                                                            <form:options items="${customers}" itemValue="id"
-                                                                itemLabel="idName" />
-                                                        </form:select>
-                                                        <label for="customer">Customer</label>
-                                                        ${errorCustomerId}
-                                                    </div>
-                                                    <div class="form-floating mb-3 col-12">
-                                                        <form:select path="room.id"
-                                                            class="form-select ${not empty errorRoomId ? 'is-invalid' : ''}"
-                                                            id="room">
-                                                            <form:option value="" label="Select Room" />
-                                                            <form:options items="${rooms}" itemValue="id"
-                                                                itemLabel="idRoomName" />
-                                                        </form:select>
-                                                        <label for="room">Room</label>
-                                                        ${errorRoomId}
-                                                    </div>
+
 
                                                     <button type="submit" class="btn btn-warning">Update</button>
                                                 </div>
                                             </form:form>
 
                                         </div>
+                                        <div class="col-4 bg-white p-3">
+
+                                            <h5 class="mb-3">Current Customers in Rental</h5>
+                                            <ul class="list-group">
+                                                <c:forEach var="customer" items="${rentalById.customers}">
+                                                    <li
+                                                        class="list-group-item list-group-item-action list-group-item-info">
+                                                        <a class="text-decoration-none"
+                                                            href="/customer/update/${customer.id}">${customer.name}</a>
+                                                    </li>
+                                                </c:forEach>
+                                            </ul>
+                                        </div>
+
+
+
                                     </div>
-                                </main>
+                                    <div class="bg-white my-3 col-12 p-5">
+                                        <button class="btn btn-info service-rental" data-bs-toggle="modal"
+                                            data-bs-target="#addServiceModal" data-rentalid="${rental.id}">Thêm dịch
+                                            vụ</button>
+                                        <table class="table table-hover my-4">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">#</th>
+                                                    <th scope="col">Service ID</th>
+                                                    <th scope="col">Service Name</th>
+                                                    <th scope="col">Price</th>
+                                                    <th scope="col">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:forEach var="service" items="${rentalById.services}"
+                                                    varStatus="loop">
+                                                    <tr>
+                                                        <th scope="row">${loop.index + 1}</th>
+                                                        <td>${service.id}</td>
+                                                        <td>${service.serviceName}</td>
+                                                        <td>${service.price}</td>
+                                                        <td>
+                                                            <form action="/rental/removeService" method="post">
+                                                                <input type="hidden" name="rentalId"
+                                                                    value="${rentalById.id}">
+                                                                <input type="hidden" name="serviceId"
+                                                                    value="${service.id}">
+                                                                <input type="hidden" name="_csrf"
+                                                                    value="${_csrf.token}" />
+
+                                                                <button type="submit"
+                                                                    class="btn btn-danger">Delete</button>
+                                                            </form>
+                                                        </td>
+                                                    </tr>
+                                                </c:forEach>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                            </div>
+                            </main>
+                        </div>
+                    </div>
+                    <div class="modal fade" id="addServiceModal" tabindex="-1" data-bs-backdrop="static"
+                        aria-labelledby="addServiceModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="addServiceModalLabel">Thêm Dịch Vụ</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="serviceForm" action="/rental/addService" method="post">
+                                        <!-- Hidden field for rental ID -->
+                                        <input type="hidden" id="modal-rental-service-id" name="rentalId"
+                                            value="${rentalById.id}">
+                                        <input type="hidden" name="_csrf" value="${_csrf.token}" />
+
+                                        <div class="mb-3">
+                                            <label for="serviceId" class="form-label">Chọn Dịch Vụ</label>
+                                            <select name="serviceId" class="form-control" id="serviceId" required>
+                                                <option value="">Chọn Dịch Vụ</option>
+                                                <!-- Loop through services list -->
+                                                <c:forEach var="service" items="${services}">
+                                                    <option value="${service.id}">${service.serviceName}</option>
+                                                </c:forEach>
+                                            </select>
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="submit" class="btn btn-info"
+                                        onclick="document.getElementById('serviceForm').submit();">Thêm Dịch
+                                        Vụ</button>
+                                </div>
                             </div>
                         </div>
                     </div>
+
 
                 </body>
 

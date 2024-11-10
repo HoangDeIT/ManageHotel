@@ -1,13 +1,18 @@
 package com.vn.ManageHotel.domain;
 
+import java.math.BigDecimal;
+import java.util.List;
+
 import com.vn.ManageHotel.utils.constant.RoomType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,12 +34,21 @@ public class Room {
     private Double area;
     @Min(value = 10, message = "Giá thuê phải ít nhất là 10")
     @NotNull(message = "Điền vào đi bạn")
-    private Double rentalPrice;
+    private BigDecimal rentalPrice;
 
-    // Getters và setters
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rental> rentals;
 
     public Long getId() {
         return id;
+    }
+
+    public List<Rental> getRentals() {
+        return rentals;
+    }
+
+    public void setRentals(List<Rental> rentals) {
+        this.rentals = rentals;
     }
 
     public void setId(Long id) {
@@ -65,11 +79,11 @@ public class Room {
         this.area = area;
     }
 
-    public Double getRentalPrice() {
+    public BigDecimal getRentalPrice() {
         return rentalPrice;
     }
 
-    public void setRentalPrice(Double rentalPrice) {
+    public void setRentalPrice(BigDecimal rentalPrice) {
         this.rentalPrice = rentalPrice;
     }
 

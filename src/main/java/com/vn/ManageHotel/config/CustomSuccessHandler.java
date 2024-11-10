@@ -27,7 +27,8 @@ public class CustomSuccessHandler implements AuthenticationSuccessHandler {
         HttpSession session = request.getSession(false);
         Staff staff = this.staffService.getStaffByPhoneNumber(authentication.getName()).get();
         session.setAttribute("fullName", staff.getFullName());
-        session.setAttribute("fullName", authentication);
+        session.setAttribute("avatar", staff.getAvatar());
+        session.setAttribute("staffId", staff.getId());
         redirectStrategy.sendRedirect(request, response, "/staff");
 
     }

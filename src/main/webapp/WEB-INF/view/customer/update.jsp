@@ -116,13 +116,13 @@
 
                         <nav id="sidebar" class="col-lg-2 col-md-4 position-sticky">
 
-                            <div class="sidebar-header" onclick="window.location.replace(`{{appURL}}/admin/brand`);">
+                            <div class="sidebar-header" onclick="window.location.replace(`/customer`);">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor"
                                     class="bi bi-house" viewBox="0 0 16 16">
                                     <path
                                         d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L2 8.207V13.5A1.5 1.5 0 0 0 3.5 15h9a1.5 1.5 0 0 0 1.5-1.5V8.207l.646.647a.5.5 0 0 0 .708-.708L13 5.793V2.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1.293zM13 7.207V13.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V7.207l5-5z" />
                                 </svg>
-                                <h3>Email brand</h3>
+                                <h3>Customers list</h3>
                             </div>
                             <ul class="list-unstyled components">
 
@@ -144,7 +144,7 @@
                                     <i class="fa fa-align-justify"></i>
                                 </button>
                             </nav>
-                            <div style="margin-top: 25vh;">
+                            <div style="margin-top: 10vh;">
                                 <main class="container">
                                     <div class="d-flex justify-content-center">
                                         <div
@@ -188,6 +188,41 @@
 
 
                                         </div>
+
+                                    </div>
+                                    <div class="bg-white mt-4 p-5">
+                                        <h4>Lịch sử thuê phòng</h4>
+                                        <table class="table table-bordered mt-3">
+                                            <thead>
+                                                <tr>
+
+                                                    <th scope="col">Ngày thuê</th>
+                                                    <th scope="col">Ngày trả</th>
+                                                    <th scope="col">Phòng</th>
+                                                    <th scope="col">Trạng thái</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <c:choose>
+                                                    <c:when test="${not empty customerById.rentals}">
+                                                        <c:forEach var="rental" items="${customerById.rentals}">
+                                                            <tr>
+                                                                <td>${rental.startDate}</td>
+                                                                <td>${rental.endDate}</td>
+                                                                <td>${rental.room.roomName}</td>
+                                                                <td>${rental.status}</td>
+                                                            </tr>
+                                                        </c:forEach>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <tr>
+                                                            <td colspan="4">No Data</td>
+                                                        </tr>
+                                                    </c:otherwise>
+                                                </c:choose>
+
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </main>
                             </div>

@@ -16,7 +16,14 @@
                     </div>
                     <hr />
                     <div class="row">
-                        <div class="col-8 offset-2">
+                        <form id="dateForm" class="col-2">
+                            <label for="startDate">Date:</label>
+                            <input type="date" id="startDate" value="${checkDay}" class="form-control my-3"
+                                placeholder="Start Date" />
+                            <button type="button" class="btn btn-secondary" onclick="updateQueryString()">Lọc
+                                ngày</button>
+                        </form>
+                        <div class="col-8">
                             <div class="input-group">
                                 <div class="input-group-btn search-panel">
                                     <button type="button" class="btn btn-outline-secondary dropdown-toggle"
@@ -57,6 +64,7 @@
                                 <th scope="col">Room type</th>
                                 <th scope="col">Area</th>
                                 <th scope="col">Price</th>
+                                <th scope="col">Availability</th> <!-- Cột mới để hiển thị trạng thái -->
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -70,6 +78,18 @@
                                     <td>${room.area}</td>
                                     <td>${room.rentalPrice}</td>
                                     <td>
+                                        <!-- Kiểm tra trạng thái phòng còn trống -->
+                                        <c:choose>
+                                            <c:when test="${roomAvailabilityMap[room.id]}">
+                                                <span class="badge bg-success">Available</span> <!-- Phòng còn trống -->
+                                            </c:when>
+                                            <c:otherwise>
+                                                <span class="badge bg-danger">Not Available</span>
+                                                <!-- Phòng đã được đặt -->
+                                            </c:otherwise>
+                                        </c:choose>
+                                    </td>
+                                    <td>
                                         <a class="btn btn-warning mx-2" href="room/update/${room.id}">Update</a>
                                         <button class="btn btn-danger delete-room" data-bs-toggle="modal"
                                             data-bs-target="#exampleModal" data-roomname="${room.roomName}"
@@ -77,8 +97,8 @@
                                     </td>
                                 </tr>
                             </c:forEach>
-
                         </tbody>
+
 
                     </table>
 
@@ -93,6 +113,7 @@
                                                 <c:param name="pageNum" value="${currentPage - 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
                                                 <c:param name="roomType" value="${roomType}" />
+                                                <c:param name="checkDate" value="${checkDate}" />
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${prevUrl}" class="page-link">
@@ -114,6 +135,7 @@
                                             <c:param name="pageNum" value="${page}" />
                                             <c:param name="searchTerm" value="${searchTerm}" />
                                             <c:param name="roomType" value="${roomType}" />
+                                            <c:param name="checkDate" value="${checkDate}" />
                                         </c:url>
                                         <li class="page-item${currentPage == page ? ' active' : ''}">
                                             <a role="button" href="${pageUrl}" class="page-link">${page}</a>
@@ -126,6 +148,7 @@
                                                 <c:param name="pageNum" value="${currentPage + 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
                                                 <c:param name="roomType" value="${roomType}" />
+                                                <c:param name="checkDate" value="${checkDate}" />
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${nextUrl}" class="page-link">
@@ -338,6 +361,17 @@
                             document.getElementById('search-bar').value = pageValue;
                         }
                     })
+                    function updateQueryString() {
+                        const startDate = document.getElementById("startDate").value;
+
+                        const url = new URL(window.location.href);
+                        const params = url.searchParams;
+
+                        if (startDate) {
+                            params.set('checkDate', startDate);
+                        }
+                        window.location.href = url.toString();
+                    }
                 </script>
 
 

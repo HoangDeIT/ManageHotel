@@ -1,6 +1,5 @@
 package com.vn.ManageHotel.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vn.ManageHotel.domain.Service;
@@ -11,8 +10,11 @@ import java.util.List;
 @org.springframework.stereotype.Service
 public class ServiceService {
 
-    @Autowired
-    private ServiceRepository serviceRepository;
+    private final ServiceRepository serviceRepository;
+
+    public ServiceService(ServiceRepository serviceRepository) {
+        this.serviceRepository = serviceRepository;
+    }
 
     @Transactional
     public List<Service> getPaginatedServices(String searchTerm, int pageNum, int pageSize) {

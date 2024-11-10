@@ -1,9 +1,9 @@
-const input = document.querySelector('.file-input');
+const inputImage = document.querySelector('.file-input');
 const divPreviewImg = document.querySelector('.previewDivImage');
 const previewImg = document.querySelector('.previewImg');
 
-if (input) {
-    input.addEventListener('change', (e) => {
+if (inputImage) {
+    inputImage.addEventListener('change', (e) => {
         let render = new FileReader();
         render.onload = () => {
             divPreviewImg.innerHTML = `
@@ -20,7 +20,7 @@ if (input) {
     });
 
     const clearInput = () => {
-        input.value = null;
+        inputImage.value = null;
         let childPreviewImg = divPreviewImg.querySelectorAll('*');
         childPreviewImg.forEach(e => {
             e.remove();

@@ -27,6 +27,10 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("user not found");
         }
         Staff staff = staffOptional.get();
+        if (!staff.isApproved()) { // Kiểm tra xem tài khoản đã được duyệt chưa
+            throw new UsernameNotFoundException("User not not approved");
+        }
+
         return new User(staff.getPhoneNumber(), staff.getPassword(), Collections.emptyList() // Danh sách quyền trống );
         );
     }

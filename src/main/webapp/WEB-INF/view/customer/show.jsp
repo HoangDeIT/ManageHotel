@@ -40,6 +40,7 @@
                                 <th scope="col">Name</th>
                                 <th scope="col">Address</th>
                                 <th scope="col">Phone Number</th>
+                                <th scope="col">createdBy</th>
                                 <th scope="col">Action</th>
                             </tr>
                         </thead>
@@ -51,6 +52,7 @@
                                     <td>${customer.name}</td>
                                     <td>${customer.address}</td>
                                     <td>${customer.phoneNumber}</td>
+                                    <td>${customer.createdBy != null ? customer.createdBy.fullName : 'Unknown'}</td>
                                     <td>
                                         <a class="btn btn-warning mx-2" href="customer/update/${customer.id}">Update</a>
                                         <button class="btn btn-danger delete-customer" data-bs-toggle="modal"
@@ -73,6 +75,8 @@
                                             <c:url var="prevUrl" value="/customer">
                                                 <c:param name="pageNum" value="${currentPage - 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
+
+
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${prevUrl}" class="page-link">
@@ -93,6 +97,8 @@
                                         <c:url var="pageUrl" value="/customer">
                                             <c:param name="pageNum" value="${page}" />
                                             <c:param name="searchTerm" value="${searchTerm}" />
+
+
                                         </c:url>
                                         <li class="page-item${currentPage == page ? ' active' : ''}">
                                             <a role="button" href="${pageUrl}" class="page-link">${page}</a>
@@ -104,6 +110,8 @@
                                             <c:url var="nextUrl" value="/customer">
                                                 <c:param name="pageNum" value="${currentPage + 1}" />
                                                 <c:param name="searchTerm" value="${searchTerm}" />
+
+
                                             </c:url>
                                             <li class="page-item">
                                                 <a role="button" href="${nextUrl}" class="page-link">
