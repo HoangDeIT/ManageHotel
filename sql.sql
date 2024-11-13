@@ -17,7 +17,7 @@ BEGIN
         LIMIT pageSize OFFSET offset;
     ELSE
         SELECT * FROM staff
-        WHERE fullName LIKE CONCAT('%', searchTerm, '%')
+        WHERE full_name LIKE CONCAT('%', searchTerm, '%')
         LIMIT pageSize OFFSET offset;
     END IF;
 END //
