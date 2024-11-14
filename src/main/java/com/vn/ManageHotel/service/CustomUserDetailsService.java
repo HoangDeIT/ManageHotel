@@ -3,6 +3,7 @@ package com.vn.ManageHotel.service;
 import java.util.Collections;
 import java.util.Optional;
 
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,7 +32,8 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("User not not approved");
         }
 
-        return new User(staff.getPhoneNumber(), staff.getPassword(), Collections.emptyList() // Danh sách quyền trống );
+        return new User(staff.getPhoneNumber(), staff.getPassword(),
+                Collections.singletonList(new SimpleGrantedAuthority("ROLE_USER")) // Danh sách quyền trống );
         );
     }
 }

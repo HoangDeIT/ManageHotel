@@ -3,6 +3,7 @@ package com.vn.ManageHotel.controller;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -64,8 +65,9 @@ public class RentalController {
             List<Room> roomList,
             List<Customer> customerList,
             Boolean status,
-            List<Service> services) {
-        List<Integer> pageArray = PaginationUtils.getPagination(totalPages, currentPage, 5);
+            List<Service> services,
+            List<BigDecimal> totalRentals) {
+        List<Integer> pageArray = PaginationUtils.getPagination(totalPages, currentPage, 10);
         model.addAttribute("rentalList", rentalList);
         model.addAttribute("pageArray", pageArray);
         model.addAttribute("currentPage", currentPage);
@@ -78,6 +80,23 @@ public class RentalController {
         model.addAttribute("customers", customerList);
         model.addAttribute("status1", status);
         model.addAttribute("services", services);
+        model.addAttribute("totalRentals", totalRentals);
+    }
+
+    private BigDecimal getTotalRental(Rental rental) {
+        BigDecimal serviceTotal = rental.getServices().stream()
+                .map(Service::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal roomCost = rental.getRoom().getRentalPrice();
+
+        BigDecimal deposit = rental.getDeposit();
+
+        BigDecimal expectedTotal = serviceTotal.add(roomCost).subtract(deposit);
+        if (expectedTotal.compareTo(BigDecimal.ZERO) < 0) {
+            return BigDecimal.ZERO;
+        }
+        return expectedTotal;
     }
 
     @GetMapping("")
@@ -104,21 +123,24 @@ public class RentalController {
         List<Room> roomList = roomService.getAllRooms(); // Assuming you have a RoomService
         List<Customer> customerList = customerService.getAllCustomers(); // Assuming you have a CustomerService
         List<Service> services = this.serviceService.getAllServices();
+        List<BigDecimal> totalRentals = rentalList.stream().map(this::getTotalRental).collect(Collectors.toList());
         setupRentalModel(model, rentalList, totalPages, pageNum, searchTerm, new Rental(), startDate, endDate, roomList,
-                customerList, status, services);
+                customerList, status, services, totalRentals);
         return "rental/show";
     }
 
     @PostMapping("")
     public String addRental(Model model, @ModelAttribute("newRental") @Valid Rental rental,
             BindingResult bindingResult) {
-        boolean isHave = this.roomService.isRoomAvailable(rental.getRoom().getId(), rental.getStartDate(),
-                rental.getEndDate());
+        // boolean isHave = this.roomService.isRoomAvailable(rental.getRoom().getId(),
+        // rental.getStartDate() == null ? rental.getStartDate() : LocalDate.now(),
+        // rental.getEndDate());
 
-        if (bindingResult.hasErrors() || !isHave) {
-            if (!isHave) {
-                bindingResult.rejectValue("room", "error.room", "Thời gian này phòng đã có người đặt");
-            }
+        if (bindingResult.hasErrors()) {
+            // if (!isHave) {
+            // bindingResult.rejectValue("room", "error.room", "Thời gian này phòng đã có
+            // người đặt");
+            // }
             int pageNum = 1;
             int size = 10;
             String startDate = "2020-01-01";
@@ -129,9 +151,10 @@ public class RentalController {
             int totalPages = rentalService.getTotalPagesForRentals(null, size, startDate, endDate, status);
             List<Room> roomList = roomService.getAllRooms();
             List<Customer> customerList = customerService.getAllCustomers();
+            List<BigDecimal> totalRentals = rentalList.stream().map(this::getTotalRental).collect(Collectors.toList());
             List<Service> services = this.serviceService.getAllServices();
             setupRentalModel(model, rentalList, totalPages, pageNum, null, rental, startDate, endDate, roomList,
-                    customerList, status, services);
+                    customerList, status, services, totalRentals);
             model.addAttribute("errors", bindingResult);
             return "rental/show";
         }
@@ -192,10 +215,11 @@ public class RentalController {
             List<Room> roomList = roomService.getAllRooms();
             List<Customer> customerList = customerService.getAllCustomers();
             List<Service> services = this.serviceService.getAllServices();
+            List<BigDecimal> totalRentals = rentalList.stream().map(this::getTotalRental).collect(Collectors.toList());
 
             setupRentalModel(model, rentalList, totalPages, pageNum, searchTerm, rental,
                     startDate, endDate, roomList,
-                    customerList, status, services);
+                    customerList, status, services, totalRentals);
             model.addAttribute("errors", bindingResult);
             return "rental/update";
         }
@@ -302,7 +326,7 @@ public class RentalController {
 
         BigDecimal deposit = rentalById.getDeposit();
 
-        BigDecimal expectedTotal = serviceTotal.add(roomCost).add(deposit).add(serviceTotal);
+        BigDecimal expectedTotal = serviceTotal.add(roomCost).subtract(deposit);
 
         BigDecimal surchargeOrDiscount = BigDecimal.ZERO;
         surchargeOrDiscount = rentalById.getAmount().subtract(expectedTotal);

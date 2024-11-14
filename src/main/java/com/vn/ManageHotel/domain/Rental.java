@@ -44,7 +44,7 @@ public class Rental {
     @JoinColumn(name = "created_by_id", referencedColumnName = "id")
     private Staff createdBy;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
 
@@ -180,6 +180,7 @@ public class Rental {
 
     @AssertTrue(message = "Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu")
     public boolean isEndDateValid() {
+        startDate = startDate == null ? LocalDate.now() : startDate;
         return endDate != null && !endDate.isBefore(startDate);
     }
 

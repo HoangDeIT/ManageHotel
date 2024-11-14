@@ -153,7 +153,7 @@ public class CustomerController {
             customerService.deleteCustomer(id);
             redirectAttributes.addFlashAttribute("status", "Xóa khách hàng thành công.");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("status", "Xóa khách hàng thất bại. Vui lòng thử lại.");
+            redirectAttributes.addFlashAttribute("status", "Xóa khách hàng thấy lòng thử lại.");
         }
         return "redirect:/customer";
     }

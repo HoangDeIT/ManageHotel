@@ -2,6 +2,7 @@ package com.vn.ManageHotel.domain;
 
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +25,7 @@ public class Customer {
     private String name;
     private String address;
     private String phoneNumber;
-    @ManyToMany(mappedBy = "customers")
+    @ManyToMany(mappedBy = "customers", cascade = CascadeType.ALL)
     private List<Rental> rentals;
 
     @ManyToOne

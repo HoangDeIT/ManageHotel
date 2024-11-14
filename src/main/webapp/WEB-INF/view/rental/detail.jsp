@@ -74,19 +74,19 @@
                                 <li><strong>Room Cost:</strong> ${roomCost} VND</li>
                                 <li><strong>Deposit:</strong> ${deposit} VND</li>
 
-                                <c:choose>
-                                    <c:when test="${surcharge > 2000 || surcharge < -1000}">
-                                        <c:if test="${surcharge < 0}">
-                                            <li><strong>Discount:</strong> ${surcharge} VND</li>
-                                        </c:if>
-                                        <c:if test="${surcharge > 0}">
-                                            <li><strong>Surcharge:</strong> ${surcharge} VND</li>
-                                        </c:if>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <li><strong>Total Expected Amount:</strong> ${expectedTotal} VND</li>
-                                    </c:otherwise>
-                                </c:choose>
+
+
+                                <c:if test="${surcharge < 0}">
+                                    <li><strong>Discount:</strong> ${surcharge} VND</li>
+                                </c:if>
+                                <c:if test="${surcharge > 0}">
+                                    <li><strong>Surcharge:</strong> ${surcharge} VND</li>
+                                </c:if>
+
+
+                                <li><strong>Total Expected Amount:</strong> ${expectedTotal} VND</li>
+
+
 
                                 <li><strong>Amount:</strong> ${rentalById.amount} VND</li>
 
